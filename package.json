@@ -6,11 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "mkdir -p public/yt-search && cd yt-search && node build"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
     "vite": "^6.3.5",
-    "@types/yt-search": "^2.10.3"
+    "@types/yt-search": "^2.10.3",
+    "diagnostic-channel": "^1.1.1",
+    "http-browserify": "^1.7.0",
+    "jsonpath-plus": "~10.3.0",
+    "querystring-es3": "^1.0.0-0",
+    "util": "^0.12.5",
+    "@babel/core": "~7.27.1",
+    "@babel/preset-env": "~7.27.1",
+    "babelify": "~10.0.0",
+    "browserify": "~17.0.0"
   }
 }
