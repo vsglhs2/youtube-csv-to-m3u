@@ -1,13 +1,11 @@
-import type yts from 'yt-search';
+import type ytsearch from 'yt-search';
 
 declare global {
-    interface Window {
-        require: CallableFunction | undefined;
-        yts: typeof yts
-    }
+    var require: CallableFunction | undefined;
+    var yts: typeof ytsearch;
 }
 
-export async function setupYTSearch() {
+export async function initYTSearch(): Promise<YTSearch> {
     self.require = undefined;
 
     // @ts-ignore
@@ -15,5 +13,7 @@ export async function setupYTSearch() {
     // @ts-ignore
     await import('./bundle.js');
 
-    return window.yts;
+    return self.yts;
 }
+
+export type YTSearch = typeof ytsearch;

@@ -1,12 +1,25 @@
-import { setupXMLHttpRequestProxy } from "./proxy";
-import { setupYTSearch } from "./yt-search"
+import { wrap } from "comlink";
+import type { YTSearch } from "./yt-search";
+import type { Session as RemoteSession } from "./worker";
 
-setupXMLHttpRequestProxy();
-const yts = await setupYTSearch();
+class Session {
+    private remote: RemoteSession;
 
-const video = await yts( { videoId: '_4Vt0UGwmgQ' } )
-console.log( video.title + ` (${ video.duration.timestamp })` )
+    constructor() {
+        const worker = new Worker('/src/worker.ts', { type: "module" });
+        this.remote = wrap<RemoteSession>(worker);
+    }
 
-// const response = await fetch(getProxiedUrl('https://youtube.com/watch?v=dp72kHM192g'));
-// const text = await response.text();
+    public async setupYTSearch() {
+        const port = await this.remote.getYTSearchPort();
 
+        // wrap<YTSearch> breaks correct parameters and return type infer
+        return wrap(port) as unknown as YTSearch;
+    }
+}
+
+const session = new Session();
+const yts = await session.setupYTSearch();
+
+const video = await yts({ videoId: 'h-7uu3mQ3cg' })
+console.log(video.title + ` (${video.duration.timestamp})`)

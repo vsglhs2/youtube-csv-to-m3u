@@ -1,10 +1,8 @@
 declare global {
-    interface Window {
-        getProxiedUrl: typeof getProxiedUrl;
-    }
+    function getProxiedUrl(url: string): string;
 }
 
-window.getProxiedUrl = getProxiedUrl;
+self.getProxiedUrl = getProxiedUrl;
 
 let proxyScheme = import.meta.env.VITE_APP_PROXY_SCHEME;
 
@@ -24,8 +22,8 @@ export function getProxyScheme() {
 
 export function setupXMLHttpRequestProxy() {
     // need to surpass cors issues
-    const open = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function (
+    const open = self.XMLHttpRequest.prototype.open;
+    self.XMLHttpRequest.prototype.open = function (
         method,
         url,
         async: boolean = false,
