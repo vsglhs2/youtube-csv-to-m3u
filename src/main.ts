@@ -1,14 +1,8 @@
-import yts from "./yt-search";
+import { setupXMLHttpRequestProxy } from "./proxy";
+import { setupYTSearch } from "./yt-search"
 
-const proxyScheme = 'https://api.cors.lol?url=<%url%>';
-
-function getProxiedUrl(url: string) {
-  const encoded = encodeURIComponent(url);
-
-  return proxyScheme.replace('<%url%>', encoded);
-}
-
-window.getProxiedUrl = getProxiedUrl;
+setupXMLHttpRequestProxy();
+const yts = await setupYTSearch();
 
 const video = await yts( { videoId: '_4Vt0UGwmgQ' } )
 console.log( video.title + ` (${ video.duration.timestamp })` )

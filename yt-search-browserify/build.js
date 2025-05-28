@@ -36,22 +36,22 @@ browserify()
 
         exit(-1);
     })
-    .pipe(fs.createWriteStream("../public/yt-search/deps.js"));
+    .pipe(fs.createWriteStream('../src/yt-search/deps.js'));
 
-browserify("./patch.js")
-    .external("jsonpath-plus")
-    .external("worker_threads")
-    .external("async_hooks")
-    .external("util/types")
-    .external("diagnostics_channel")
-    .external("querystring")
+browserify('./patch.js')
+    .external('jsonpath-plus')
+    .external('worker_threads')
+    .external('async_hooks')
+    .external('util/types')
+    .external('diagnostics_channel')
+    .external('querystring')
     // externalizing http2 without providing
     // polyfill help to bypass part of errors
-    .external("http2")
-    .transform("babelify", {
+    .external('http2')
+    .transform('babelify', {
         global: true,
-        ignore: [/\/node_modules\/(?!undici\/)/],
-        presets: ["@babel/preset-env"],
+        presets: ['@babel/preset-env'],
+        plugins: ['@upleveled/babel-plugin-remove-node-prefix'],
     })
     .bundle()
     .on('error', (error) => {
@@ -59,4 +59,4 @@ browserify("./patch.js")
 
         exit(-1);
     })
-    .pipe(fs.createWriteStream("../public/yt-search/bundle.js"));
+    .pipe(fs.createWriteStream('../src/yt-search/bundle.js'));

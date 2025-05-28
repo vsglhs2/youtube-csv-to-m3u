@@ -24,4 +24,5 @@ dist-ssr
 *.sw?
 
 yt-search-repo
-public/yt-search
+src/yt-search/bundle.js
+src/yt-search/deps.js
