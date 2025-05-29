@@ -4,16 +4,112 @@ declare global {
 
 self.getProxiedUrl = getProxiedUrl;
 
-let proxyScheme = import.meta.env.VITE_APP_PROXY_SCHEME;
+export type ProxyScheme = {
+    encode: boolean;
+    pattern: string;
+};
 
-export function getProxiedUrl(url: string) {
-  const encoded = encodeURIComponent(url);
+type ParsedProxyScheme = ProxyScheme & {
+    keys: (keyof URL)[];
+};
 
-  return proxyScheme.replace('<%url%>', encoded);
+class ProxySchemeError extends Error {
+    public scheme: ProxyScheme;
+
+    constructor(scheme: ProxyScheme, message: string) {
+        super(message);
+
+        this.scheme = scheme;
+    }
 }
 
-export function setProxyScheme(scheme: string) {
-    proxyScheme = scheme;
+class InsufficientProxySchemeError extends ProxySchemeError {
+    constructor(scheme: ProxyScheme) {
+        const message = `Pattern ${scheme.pattern} must include at least on <%url_key%>`;
+        super(scheme, message);
+    }
+}
+
+class MalformedProxySchemeError extends ProxySchemeError {
+    constructor(scheme: ProxyScheme) {
+        const message = `Pattern ${scheme.pattern} must include only parts of URL`;
+        super(scheme, message);
+    }
+}
+
+function getProxySchemeKeys() {
+    const url = new URL(location.href);
+    const keys = Object.keys(Object.getPrototypeOf(url)) as (keyof URL)[];
+    const substitutableKeys: (keyof URL)[] = [];
+
+    for (const key of keys) {
+        if (typeof url[key] !== 'string') continue;
+
+        substitutableKeys.push(key);
+    }
+
+    console.log(substitutableKeys);
+
+    return substitutableKeys;
+}
+
+const keys = getProxySchemeKeys();
+
+
+function parseProxyScheme(scheme: ProxyScheme): ParsedProxyScheme {
+    const result = scheme.pattern.match(/\<\%(\w+)\%\>/);
+    if (!result || result.length <= 1) {
+        throw new InsufficientProxySchemeError(scheme);
+    }
+
+    const candidates = result.slice(1);
+    const keys: (keyof URL)[] = [];
+
+    for (const key of candidates) {
+        if (!isProxySchemeKey(key)) {
+            throw new MalformedProxySchemeError(scheme);
+        }
+
+        keys.push(key);
+    }
+
+    return {
+        ...scheme,
+        keys,
+    };
+}
+
+export function isProxySchemeParsable(scheme: ProxyScheme) {
+    try {
+        parseProxyScheme(scheme);
+        return true;
+    } catch (error) {
+        console.error(error);
+
+        return false;
+    }
+}
+
+function isProxySchemeKey(key: keyof URL | string): key is keyof URL {
+    return keys.includes(key as keyof URL);
+}
+
+export function getProxiedUrl(url: string) {
+    const parsed = new URL(url);
+    let final = proxyScheme.pattern;
+
+    for (const key of proxyScheme.keys) {
+        const value = parsed[key] as string;
+        const encoded = proxyScheme.encode ? encodeURIComponent(value) : value;
+
+        final = final.replace(`<%${key}%>`, encoded);
+    }
+
+    return final;
+}
+
+export function setProxyScheme(scheme: ProxyScheme) {
+    proxyScheme = parseProxyScheme(scheme);
 }
 
 export function getProxyScheme() {
@@ -32,7 +128,7 @@ export function setupXMLHttpRequestProxy() {
     ) {
         const stringifiedUrl = String(url);
         const proxiedUrl = self.getProxiedUrl(stringifiedUrl);
-        
+
         open.call(
             this,
             method,
@@ -43,3 +139,8 @@ export function setupXMLHttpRequestProxy() {
         );
     }
 }
+
+let proxyScheme: ParsedProxyScheme = parseProxyScheme({
+    encode: true,
+    pattern: import.meta.env.VITE_APP_PROXY_SCHEME,
+});

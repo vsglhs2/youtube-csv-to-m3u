@@ -1,5 +1,5 @@
 import { expose, transfer } from "comlink";
-import { setupXMLHttpRequestProxy } from "./proxy";
+import { getProxyScheme, setProxyScheme, setupXMLHttpRequestProxy } from "./proxy";
 import { initYTSearch, type YTSearch } from "./yt-search"
 
 function walkAndMutateRecursive(
@@ -20,7 +20,6 @@ function walkAndMutateRecursive(
 }
 
 async function setupYTSearch(): Promise<YTSearch> {
-    setupXMLHttpRequestProxy();
     const yts = await initYTSearch();
 
     return new Proxy<YTSearch>(yts, { 
@@ -46,6 +45,10 @@ async function setupYTSearch(): Promise<YTSearch> {
 }
 
 export class Session {
+    constructor() {
+        setupXMLHttpRequestProxy();
+    }
+    
     async getYTSearchPort() {
         const yts = await setupYTSearch();
         const { port1, port2 } = new MessageChannel();
@@ -54,6 +57,9 @@ export class Session {
 
         return transfer(port2, [port2]);
     }
+
+    getProxyScheme = getProxyScheme;
+    setProxyScheme = setProxyScheme;
 }
 
 const session = new Session();

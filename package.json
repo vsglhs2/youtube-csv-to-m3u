@@ -14,6 +14,7 @@
   "devDependencies": {
     "@babel/core": "~7.27.1",
     "@babel/preset-env": "~7.27.1",
+    "@types/papaparse": "^5.3.16",
     "@types/yt-search": "^2.10.3",
     "@upleveled/babel-plugin-remove-node-prefix": "^1.0.5",
     "babelify": "~10.0.0",
@@ -27,6 +28,7 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
-    "comlink": "^4.4.2"
+    "comlink": "^4.4.2",
+    "papaparse": "^5.5.3"
   }
 }
