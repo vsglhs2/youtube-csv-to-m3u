@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "build-yt-search": "mkdir -p public/yt-search && cd yt-search-browserify && node build",
-    "prepare-yt-search": "git clone https://github.com/talmobi/yt-search.git yt-search-repo || true && cd yt-search-repo && npm i",
+    "prepare-yt-search": "git clone https://github.com/talmobi/yt-search.git yt-search-repo || true && cd yt-search-repo && rm -rf .git && npm i",
     "postinstall": "npm run prepare-yt-search && npm run build-yt-search",
     "lint": "eslint . --ignore-pattern \"yt-search-repo/*\" --ignore-pattern \"yt-search-browserify/*\" --ignore-pattern \"dist/*\" --ignore-pattern \"src/yt-search/*\"",
     "lint:fix": "eslint --fix . --ignore-pattern \"yt-search-repo/*\" --ignore-pattern \"yt-search-browserify/*\" --ignore-pattern \"dist/*\" --ignore-pattern \"src/yt-search/*\""
