@@ -62,7 +62,7 @@ const schemes: ProxyScheme[] = [
     { encode: false, pattern: 'https://cors-anywhere.herokuapp.com/<%href%>' },
 ];
 
-await session.setProxyScheme(schemes[2]);
+await session.setProxyScheme(schemes[0]);
 
 window.yts = yts;
 
