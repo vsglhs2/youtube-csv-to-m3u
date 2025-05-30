@@ -1,11 +1,11 @@
-import ImportPage from "@/pages/import";
-import ImportsPage from "@/pages/imports";
-import NotFoundPage from "@/pages/notfound";
-import PickerPage from "@/pages/picker";
+import ImportPage from "@/app/pages/import";
+import ImportsPage from "@/app/pages/imports";
+import NotFoundPage from "@/app/pages/notfound";
+import PickerPage from "@/app/pages/picker";
 import type { FC } from "react"
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router"
 import { AppLayout } from "./Layout";
-import { urls } from "./urls";
+import { urls } from "@/app/urls";
 
 const routes = createRoutesFromElements(
     <Route element={<AppLayout />}>

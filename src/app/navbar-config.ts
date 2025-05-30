@@ -1,4 +1,4 @@
-import type { NavbarConfig } from "@/components/nav-items";
+import type { NavbarConfig } from "@/app/components/Sidebar/nav-items";
 import { File, List, Settings } from "lucide-react";
 import { urls } from "./urls";
 

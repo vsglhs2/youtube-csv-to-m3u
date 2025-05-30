@@ -1,17 +1,11 @@
+import { cn } from "@/shadcn/lib/utils";
+import { SidebarMenuItem, SidebarMenuButton, SidebarGroupLabel, SidebarMenu, SidebarGroup } from "@/shadcn/components/ui/sidebar";
 import {
   type LucideIcon,
 } from "lucide-react"
 
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
 import type { FC } from "react";
 import { Link } from "react-router";
-import { cn } from "@/lib/utils";
 
 export type NavbarItem = {
   name: string;

@@ -1,6 +1,6 @@
-import { Breadcrumb as BreadcrumbComponent, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
-import { useBreadcrumb } from "@/hooks";
-import { cn } from "@/lib/utils";
+import { Breadcrumb as BreadcrumbComponent, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/shadcn/components/ui/breadcrumb";
+import { useBreadcrumb } from "@/app/hooks";
+import { cn } from "@/shadcn/lib/utils";
 import type { FC, JSX } from "react";
 import { Link } from "react-router";
 

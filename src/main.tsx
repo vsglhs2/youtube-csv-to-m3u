@@ -4,7 +4,7 @@ import type { Session as RemoteSession } from "./worker";
 import Papa from 'papaparse';
 import type { ProxyScheme } from "./proxy";
 import { createRoot } from "react-dom/client";
-import { App } from "./app";
+import { App } from "./app/components";
 import React from "react";
 
 class Session {

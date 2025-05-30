@@ -1,14 +1,13 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
 import type { FC } from "react";
 import { Outlet } from "react-router";
-import { Breadcrumb } from "../Breadcrumb";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/shadcn/components/ui/sidebar";
+import { Sidebar, Breadcrumb } from "@/app/components";
 
 export const AppLayout: FC = () => {
     return (
         <SidebarProvider>
-            <AppSidebar collapsible="icon" variant="inset" />
+            <Sidebar collapsible="icon" variant="inset" />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2">
                     <div className="flex items-center gap-2 px-4">
