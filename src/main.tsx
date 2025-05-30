@@ -3,6 +3,9 @@ import type { YTSearch } from "./yt-search";
 import type { Session as RemoteSession } from "./worker";
 import Papa from 'papaparse';
 import type { ProxyScheme } from "./proxy";
+import { createRoot } from "react-dom/client";
+import { App } from "./components";
+import React from "react";
 
 class Session {
     private worker: Worker;
@@ -92,30 +95,39 @@ type YTFavoriteItem = [
     YTArtistName
 ];
 
-const input = document.querySelector('#file') as HTMLInputElement;
-input.addEventListener('change', async () => {
-    const { files } = input;
-    if (!files) return;
+// const input = document.querySelector('#file') as HTMLInputElement;
+// input.addEventListener('change', async () => {
+//     const { files } = input;
+//     if (!files) return;
 
-    const [file] = files;
-    
-    const parsed = await parseCSVFromFile<YTPlaylistItem>(file);
-    console.log(parsed.data);
+//     const [file] = files;
 
-    const results: unknown[] = [];
-    const errors: unknown[] = [];
-    const promises: Promise<unknown>[] = [];
+//     const parsed = await parseCSVFromFile<YTPlaylistItem>(file);
+//     console.log(parsed.data);
 
-    for (const [videoId] of parsed.data.slice(1)) {
-        const promise = yts({ videoId })
-            .then(result => results.push(result))
-            .catch(error => errors.push([videoId, error]));
+//     const results: unknown[] = [];
+//     const errors: unknown[] = [];
+//     const promises: Promise<unknown>[] = [];
 
-        promises.push(promise);
-    }
+//     for (const [videoId] of parsed.data.slice(1)) {
+//         const promise = yts({ videoId })
+//             .then(result => results.push(result))
+//             .catch(error => errors.push([videoId, error]));
 
-    await Promise.allSettled(promises);
+//         promises.push(promise);
+//     }
 
-    console.log(errors);
-    console.log(results);
-});
+//     await Promise.allSettled(promises);
+
+//     console.log(errors);
+//     console.log(results);
+// });
+
+const rootElement = document.getElementById('app')!;
+const root = createRoot(rootElement);
+
+root.render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
+)

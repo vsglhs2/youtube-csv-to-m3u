@@ -15,6 +15,8 @@
     "@babel/core": "~7.27.1",
     "@babel/preset-env": "~7.27.1",
     "@types/papaparse": "^5.3.16",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.5",
     "@types/yt-search": "^2.10.3",
     "@upleveled/babel-plugin-remove-node-prefix": "^1.0.5",
     "babelify": "~10.0.0",
@@ -23,12 +25,22 @@
     "http-browserify": "^1.7.0",
     "jsonpath-plus": "~10.3.0",
     "querystring-es3": "^1.0.0-0",
+    "tw-animate-css": "^1.3.2",
     "typescript": "~5.8.3",
     "util": "^0.12.5",
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.8",
+    "@vitejs/plugin-react": "^4.5.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "comlink": "^4.4.2",
-    "papaparse": "^5.5.3"
+    "lucide-react": "^0.511.0",
+    "papaparse": "^5.5.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss": "^4.1.8"
   }
 }
