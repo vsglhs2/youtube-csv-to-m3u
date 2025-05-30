@@ -1,2 +1,1 @@
 export { Breadcrumb } from "./Breadcrumb";
-export { App } from "./App";

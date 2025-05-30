@@ -1,9 +1,9 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
 import type { FC } from "react";
 import { Outlet } from "react-router";
+import { Breadcrumb } from "../Breadcrumb";
 
 export const AppLayout: FC = () => {
     return (
@@ -14,30 +14,12 @@ export const AppLayout: FC = () => {
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
                         <Separator orientation="vertical" className="mr-2 h-4" />
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink href="#">
-                                        Building Your Application
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="hidden md:block" />
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <Breadcrumb />
                     </div>
                 </header>
-                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
                     <Outlet />
-                    {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                            <div className="aspect-video rounded-xl bg-muted/50" />
-                            <div className="aspect-video rounded-xl bg-muted/50" />
-                            <div className="aspect-video rounded-xl bg-muted/50" />
-                        </div>
-                        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" /> */}
-                </div>
+                </main>
             </SidebarInset>
         </SidebarProvider>
     )

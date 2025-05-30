@@ -4,7 +4,7 @@ import NotFoundPage from "@/pages/notfound";
 import PickerPage from "@/pages/picker";
 import type { FC } from "react"
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router"
-import { AppLayout } from "./layout";
+import { AppLayout } from "./Layout";
 import { urls } from "./urls";
 
 const routes = createRoutesFromElements(
