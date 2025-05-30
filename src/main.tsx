@@ -4,7 +4,7 @@ import type { Session as RemoteSession } from "./worker";
 import Papa from 'papaparse';
 import type { ProxyScheme } from "./proxy";
 import { createRoot } from "react-dom/client";
-import { App } from "./components";
+import { App } from "./app";
 import React from "react";
 
 class Session {
@@ -56,8 +56,8 @@ class ThrottledQueue<T> {
     }
 }
 
-const session = new Session();
-const yts = await session.setupYTSearch();
+// const session = new Session();
+// const yts = await session.setupYTSearch();
 
 const schemes: ProxyScheme[] = [
     { encode: true, pattern: 'https://corsproxy.io/?url=<%href%>' },
@@ -65,9 +65,7 @@ const schemes: ProxyScheme[] = [
     { encode: false, pattern: 'https://cors-anywhere.herokuapp.com/<%href%>' },
 ];
 
-await session.setProxyScheme(schemes[0]);
-
-window.yts = yts;
+// await session.setProxyScheme(schemes[0]);
 
 export async function parseCSVFromFile<T = unknown>(file: File) {
     const string = await file.text();
