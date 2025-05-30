@@ -4,7 +4,7 @@ process.versions.node = '16.0.0';
 // dasu use tries to use node mode
 // if there is no window object
 if (!self.window) {
-    self.window = self;
+	self.window = self;
 }
 
 const index = require('../yt-search-repo/src/index.js');

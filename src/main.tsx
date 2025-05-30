@@ -1,79 +1,81 @@
-import { wrap, type Remote } from "comlink";
-import type { YTSearch } from "./yt-search";
-import type { Session as RemoteSession } from "./worker";
+import { wrap, type Remote } from 'comlink';
 import Papa from 'papaparse';
-import type { ProxyScheme } from "./proxy";
-import { createRoot } from "react-dom/client";
-import { App } from "./app/components";
-import React from "react";
+import { createRoot } from 'react-dom/client';
+import React from 'react';
+
+import type { YTSearch } from './yt-search';
+import type { Session as RemoteSession } from './worker';
+import type { ProxyScheme } from './proxy';
+import { App } from './app/components';
+
 
 class Session {
-    private worker: Worker;
-    private remote: Remote<RemoteSession>;
+	private worker: Worker;
+	private remote: Remote<RemoteSession>;
 
-    constructor() {
-        this.worker = new Worker('/src/worker.ts', { type: "module" });
-        this.remote = wrap<RemoteSession>(this.worker);
-    }
+	constructor() {
+		this.worker = new Worker('/src/worker.ts', { type: 'module' });
+		this.remote = wrap<RemoteSession>(this.worker);
+	}
 
-    public async setupYTSearch() {
-        const port = await this.remote.getYTSearchPort();
+	public async setupYTSearch() {
+		const port = await this.remote.getYTSearchPort();
 
-        // wrap<YTSearch> breaks correct parameters and return type infer
-        return wrap(port) as unknown as YTSearch;
-    }
+		// wrap<YTSearch> breaks correct parameters and return type infer
+		return wrap(port) as unknown as YTSearch;
+	}
 
-    public getProxyScheme() {
-        return this.remote.getProxyScheme();
-    }
+	public getProxyScheme() {
+		return this.remote.getProxyScheme();
+	}
 
-    public setProxyScheme(scheme: ProxyScheme) {
-        return this.remote.setProxyScheme(scheme);
-    }
+	public setProxyScheme(scheme: ProxyScheme) {
+		return this.remote.setProxyScheme(scheme);
+	}
 
-    public release() {
-        this.worker.terminate();
-    }
+	public release() {
+		this.worker.terminate();
+	}
 }
 
 class ThrottledQueue<T> {
-    private items: Set<T>;
+	private items: Set<T>;
 
-    constructor() {
-        this.items = new Set();
-    }
+	constructor() {
+		this.items = new Set();
+	}
 
-    public set(item: T) {
-        this.items.add(item);
-    }
+	public set(item: T) {
+		this.items.add(item);
+	}
 
-    public remove(item: T) {
-        this.items.delete(item);
-    }
+	public remove(item: T) {
+		this.items.delete(item);
+	}
 
-    public next(): T {
-        return this.items.values().next().value!;
-    }
+	public next(): T {
+		return this.items.values().next().value!;
+	}
 }
 
 // const session = new Session();
 // const yts = await session.setupYTSearch();
 
 const schemes: ProxyScheme[] = [
-    { encode: true, pattern: 'https://corsproxy.io/?url=<%href%>' },
-    { encode: true, pattern: 'https://api.cors.lol?url=<%href%>' },
-    { encode: false, pattern: 'https://cors-anywhere.herokuapp.com/<%href%>' },
+	{ encode: true, pattern: 'https://corsproxy.io/?url=<%href%>' },
+	{ encode: true, pattern: 'https://api.cors.lol?url=<%href%>' },
+	{ encode: false, pattern: 'https://cors-anywhere.herokuapp.com/<%href%>' },
 ];
 
 // await session.setProxyScheme(schemes[0]);
 
 export async function parseCSVFromFile<T = unknown>(file: File) {
-    const string = await file.text();
+	const string = await file.text();
 
-    return Papa.parse<T>(string, {
-        skipEmptyLines: true,
-        comments: false,
-    });
+	return Papa.parse<T>(string, {
+		skipEmptyLines: true,
+		comments: false,
+	});
 }
 
 type YTVideoId = string;
@@ -90,7 +92,7 @@ type YTFavoriteItem = [
     YTAlbumTitle,
     YTArtistName,
     YTArtistName,
-    YTArtistName
+    YTArtistName,
 ];
 
 // const input = document.querySelector('#file') as HTMLInputElement;
@@ -125,7 +127,7 @@ const rootElement = document.getElementById('app')!;
 const root = createRoot(rootElement);
 
 root.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>
-)
+	<React.StrictMode>
+		<App />
+	</React.StrictMode>,
+);

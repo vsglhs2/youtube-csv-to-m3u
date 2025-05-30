@@ -1,11 +1,11 @@
-import { cn } from "@/shadcn/lib/utils";
-import { SidebarMenuItem, SidebarMenuButton, SidebarGroupLabel, SidebarMenu, SidebarGroup } from "@/shadcn/components/ui/sidebar";
 import {
-  type LucideIcon,
-} from "lucide-react"
+	type LucideIcon,
+} from 'lucide-react';
+import type { FC } from 'react';
+import { Link } from 'react-router';
 
-import type { FC } from "react";
-import { Link } from "react-router";
+import { SidebarMenuItem, SidebarMenuButton, SidebarGroupLabel, SidebarMenu, SidebarGroup } from '@/shadcn/components/ui/sidebar';
+import { cn } from '@/shadcn/lib/utils';
 
 export type NavbarItem = {
   name: string;
@@ -26,16 +26,16 @@ type NavItemProps = {
 };
 
 const NavbarItem: FC<NavItemProps> = ({ item }) => {
-  return (
-    <SidebarMenuItem>
-      <SidebarMenuButton tooltip={item.name} asChild>
-        <Link to={item.url}>
-          <item.icon />
-          <span>{item.name}</span>
-        </Link>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
-  )
+	return (
+		<SidebarMenuItem>
+			<SidebarMenuButton tooltip={item.name} asChild>
+				<Link to={item.url}>
+					<item.icon />
+					<span>{item.name}</span>
+				</Link>
+			</SidebarMenuButton>
+		</SidebarMenuItem>
+	);
 };
 
 type NavGroupProps = {
@@ -43,34 +43,34 @@ type NavGroupProps = {
 };
 
 const NavbarGroup: FC<NavGroupProps> = ({ group }) => {
-  const renderedItems = group.items.map((item) => (
-    <NavbarItem key={item.name} item={item} />
-  ));
+	const renderedItems = group.items.map((item) => (
+		<NavbarItem key={item.name} item={item} />
+	));
 
-  const renderedLabel = group.name && (
-    <SidebarGroupLabel>{group.name}</SidebarGroupLabel>
-  );
+	const renderedLabel = group.name && (
+		<SidebarGroupLabel>{group.name}</SidebarGroupLabel>
+	);
 
-  return (
-    <SidebarMenu className={cn(group.moveToBottom ? 'mt-auto' : 'mb-4')}>
-      {renderedLabel}
-      {renderedItems}
-    </SidebarMenu>
-  )
-}
+	return (
+		<SidebarMenu className={cn(group.moveToBottom ? 'mt-auto' : 'mb-4')}>
+			{renderedLabel}
+			{renderedItems}
+		</SidebarMenu>
+	);
+};
 
 type NavItemsProps = {
   config: NavbarConfig;
 };
 
 export const NavItems: FC<NavItemsProps> = ({ config }) => {
-  const renderedGroups = config.map((group, i) => (
-    <NavbarGroup key={String(group.name) + i} group={group} />
-  ));
+	const renderedGroups = config.map((group, i) => (
+		<NavbarGroup key={String(group.name) + i} group={group} />
+	));
 
-  return (
-    <SidebarGroup className="h-full">
-      {renderedGroups}
-    </SidebarGroup>
-  )
-}
+	return (
+		<SidebarGroup className="h-full">
+			{renderedGroups}
+		</SidebarGroup>
+	);
+};

@@ -9,11 +9,12 @@ OuterTune do not allow importing stuff from youtube takeout. So, having only csv
 [ ] - add proxy settings
 [ ] - add imports page
 [ ] - add import page
+[ ] - add picker page
 [ ] - store imported information in idb
 [ ] - create m3u file on csv import
 [ ] - add retry logic per item and as whole
 [ ] - implement queue for calls to yt-search
-[ ] - make simple ui
+[x] - make simple ui structure
 [ ] - add searching for alternative in case if video is unavailable (for favorites (?))
 [ ] - make yt-search build based on npm package without repo cloning
-[ ] - add linter
+[x] - add linter

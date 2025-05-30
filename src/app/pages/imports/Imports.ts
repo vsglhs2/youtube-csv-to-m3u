@@ -1,7 +1,7 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
 export const ImportsPage: FC = () => {
-    return (
-        "imports"
-    );
+	return (
+		'imports'
+	);
 };

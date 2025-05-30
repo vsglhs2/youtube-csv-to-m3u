@@ -1,8 +1,9 @@
-import { TricksTable } from "@/shadcn/components/tricks-table";
-import type { FC } from "react";
+import type { FC } from 'react';
+
+import { TricksTable } from '@/shadcn/components/tricks-table';
 
 export const PickerPage: FC = () => {
-    return (
-        <TricksTable />
-    );
+	return (
+		<TricksTable />
+	);
 };

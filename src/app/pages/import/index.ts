@@ -1,1 +1,1 @@
-export { ImportPage as default } from "./Import";
+export { ImportPage as default } from './Import';

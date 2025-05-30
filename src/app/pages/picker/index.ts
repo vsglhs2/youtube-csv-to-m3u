@@ -1,1 +1,1 @@
-export { PickerPage as default } from "./Picker";
+export { PickerPage as default } from './Picker';

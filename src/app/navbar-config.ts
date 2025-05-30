@@ -1,6 +1,7 @@
-import type { NavbarConfig } from "@/app/components/Sidebar/nav-items";
-import { File, List, Settings } from "lucide-react";
-import { urls } from "./urls";
+import { File, List, Settings } from 'lucide-react';
+
+import type { NavbarConfig } from '@/app/components/Sidebar/nav-items';
+import { urls } from './urls';
 
 export const config = [
 	{
@@ -14,7 +15,7 @@ export const config = [
 				name: 'Picker',
 				url: urls.picker,
 				icon: File,
-			}
+			},
 		],
 	},
 	{

@@ -1,19 +1,18 @@
 import type ytsearch from 'yt-search';
 
 declare global {
-    var require: CallableFunction | undefined;
+    // eslint-disable-next-line no-var
     var yts: typeof ytsearch;
 }
 
 export async function initYTSearch(): Promise<YTSearch> {
-    self.require = undefined;
+	// @ts-expect-error just define require so deps script won't throw error
+	self.require = function () {};
 
-    // @ts-ignore
-    await import('./deps.js');
-    // @ts-ignore
-    await import('./bundle.js');
+	await import('./deps.js');
+	await import('./bundle.js');
 
-    return self.yts;
+	return self.yts;
 }
 
 export type YTSearch = typeof ytsearch;

@@ -1,3 +1,3 @@
 module.exports = {
-    isUint8Array: (buffer) => buffer instanceof Uint8Array,
+	isUint8Array: (buffer) => buffer instanceof Uint8Array,
 };
