@@ -7,9 +7,10 @@ import {
 	InputIcon,
 } from '@radix-ui/react-icons';
 
-import { DataTable, type TableScheme } from '@/shadcn/components/data-table';
+import { DataTable } from '@/shadcn/components/data-table';
 import { CsvImporter } from '@/shadcn/components/csv-importer';
 import { BentoCard, BentoGrid, type BentoCardProps } from '@/shadcn/components/ui/bento-grid';
+import { columns } from '@/shadcn/components/columns';
 
 const features: BentoCardProps[] = [
 	{
@@ -66,7 +67,7 @@ function BentoDemo() {
 }
 
 export const PickerPage: FC = () => {
-	const [data, setData] = useState<TableScheme>([]);
+	const [data, setData] = useState([]);
 
 	return (
 		<>
@@ -81,7 +82,7 @@ export const PickerPage: FC = () => {
 					{ label: 'Artist Name 3', value: 'Artist Name 3' },
 				]}
 				onImport={(parsedData) => {
-					const formattedData: TableScheme = parsedData.map(
+					const formattedData = parsedData.map(
 						(item) => ({
 							videoId: item['Video Id'],
 							songTitle: item['Song Title'],
@@ -97,14 +98,7 @@ export const PickerPage: FC = () => {
 				}}
 				className="self-end"
 			/>
-			<DataTable headings={[
-				'Video Id',
-				'Song Title',
-				'Album Title',
-				'Artist Name 1',
-				'Artist Name 2',
-				'Artist Name 3',
-			]} data={data} />
+			<DataTable data={[]} columns={columns} />
 		</>
 
 	);
