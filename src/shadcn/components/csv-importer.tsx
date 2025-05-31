@@ -41,41 +41,41 @@ import {
 import { FileUploader } from '@/shadcn/components/file-uploader';
 
 interface CsvImporterProps
-  extends React.ComponentPropsWithoutRef<typeof DialogTrigger>,
-    React.ComponentProps<'button'> {
-  /**
-   * Array of field mappings defining the imported data structure.
-   * Each includes a label, value, and optional required flag.
-   * @example fields={[{ label: 'Name', value: 'name', required: true }, { label: 'Email', value: 'email' }]}
-   */
-  fields: {
-    /**
-     * Field display label shown to the user.
-     * @example "Name"
-     */
-    label: string
+	extends React.ComponentPropsWithoutRef<typeof DialogTrigger>,
+	React.ComponentProps<'button'> {
+	/**
+	 * Array of field mappings defining the imported data structure.
+	 * Each includes a label, value, and optional required flag.
+	 * @example fields={[{ label: 'Name', value: 'name', required: true }, { label: 'Email', value: 'email' }]}
+	 */
+	fields: {
+		/**
+		 * Field display label shown to the user.
+		 * @example "Name"
+		 */
+		label: string
 
-    /**
-     * Key identifying the field in the imported data.
-     * @example "name"
-     */
-    value: string
+		/**
+		 * Key identifying the field in the imported data.
+		 * @example "name"
+		 */
+		value: string
 
-    /**
-     * Optional flag indicating if the field is required.
-     * Required fields cannot be unchecked during mapping.
-     * @default false
-     * @example true
-     */
-    required?: boolean
-  }[]
+		/**
+		 * Optional flag indicating if the field is required.
+		 * Required fields cannot be unchecked during mapping.
+		 * @default false
+		 * @example true
+		 */
+		required?: boolean
+	}[]
 
-  /**
-   * Callback function called on data import.
-   * Receives an array of records as key-value pairs.
-   * @example onImport={(data) => console.log(data)}
-   */
-  onImport: (data: Record<string, unknown>[]) => void
+	/**
+	 * Callback function called on data import.
+	 * Receives an array of records as key-value pairs.
+	 * @example onImport={(data) => console.log(data)}
+	 */
+	onImport: (data: Record<string, unknown>[]) => void
 }
 
 export function CsvImporter({
@@ -100,7 +100,7 @@ export function CsvImporter({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button variant="outline" className={cn('w-fit', className)} {...props}>
-          Import CSV
+					Import CSV
 				</Button>
 			</DialogTrigger>
 			{step === 'upload' ? (
@@ -108,7 +108,7 @@ export function CsvImporter({
 					<DialogHeader>
 						<DialogTitle>Upload CSV</DialogTitle>
 						<DialogDescription>
-              Drag and drop your files here or click to browse.
+							Drag and drop your files here or click to browse.
 						</DialogDescription>
 					</DialogHeader>
 					<FileUploader
@@ -117,8 +117,8 @@ export function CsvImporter({
 						maxSize={4 * 1024 * 1024}
 						maxFileCount={1}
 						/**
-             * alternatively this can be used without uploading the file
-             */
+			 * alternatively this can be used without uploading the file
+			 */
 						onValueChange={(files) => {
 							const file = files[0];
 							if (!file) return;
@@ -144,7 +144,7 @@ export function CsvImporter({
 						<DialogHeader className="flex-1">
 							<DialogTitle>Map fields</DialogTitle>
 							<DialogDescription>
-                Map the CSV fields to the corresponding table fields.
+								Map the CSV fields to the corresponding table fields.
 							</DialogDescription>
 						</DialogHeader>
 						<Button
@@ -152,7 +152,7 @@ export function CsvImporter({
 							className="w-full sm:w-fit"
 							onClick={onFieldsReset}
 						>
-              Reset
+							Reset
 						</Button>
 					</div>
 					<div className="grid h-[26.25rem] w-full overflow-hidden rounded-md border">
@@ -197,7 +197,7 @@ export function CsvImporter({
 					</div>
 					<DialogFooter className="gap-2 sm:space-x-0">
 						<Button variant="outline" onClick={() => setStep('upload')}>
-              Back
+							Back
 						</Button>
 						<Button
 							onClick={async () => {
@@ -207,7 +207,7 @@ export function CsvImporter({
 								setStep('upload');
 							}}
 						>
-              Import
+							Import
 						</Button>
 					</DialogFooter>
 				</DialogContent>
@@ -217,12 +217,12 @@ export function CsvImporter({
 }
 
 interface PreviewTableHeadProps
-  extends React.ThHTMLAttributes<HTMLTableCellElement> {
-  field: { label: string; value: string; required?: boolean }
-  onFieldChange: (props: { value: string; required?: boolean }) => void
-  onFieldToggle: (props: { value: string; checked: boolean }) => void
-  currentFieldMapping: string | undefined
-  originalFieldMappings: Record<string, string | undefined>
+	extends React.ThHTMLAttributes<HTMLTableCellElement> {
+	field: { label: string; value: string; required?: boolean }
+	onFieldChange: (props: { value: string; required?: boolean }) => void
+	onFieldToggle: (props: { value: string; checked: boolean }) => void
+	currentFieldMapping: string | undefined
+	originalFieldMappings: Record<string, string | undefined>
 }
 
 function PreviewTableHead({
@@ -258,7 +258,7 @@ function PreviewTableHead({
 				</div>
 				<ArrowLeftIcon className="size-4" aria-hidden="true" />
 				<Popover open={open} onOpenChange={setOpen}>
-					<PopoverTrigger asChild>
+					<PopoverTrigger>
 						<Button
 							variant="outline"
 							size="sm"

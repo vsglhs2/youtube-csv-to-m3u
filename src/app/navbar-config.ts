@@ -1,4 +1,4 @@
-import { File, List, Settings } from 'lucide-react';
+import { Download, Expand, Home, ImportIcon, List, Settings } from 'lucide-react';
 
 import type { NavbarConfig } from '@/app/components/Sidebar/nav-items';
 import { urls } from './urls';
@@ -7,14 +7,29 @@ export const config = [
 	{
 		items: [
 			{
+				name: 'Home',
+				url: urls.index,
+				icon: Home,
+			},
+			{
 				name: 'Imports',
 				url: urls.imports,
 				icon: List,
 			},
 			{
-				name: 'Picker',
+				name: 'Import',
 				url: urls.picker,
-				icon: File,
+				icon: ImportIcon,
+			},
+			{
+				name: 'Export',
+				url: urls.export,
+				icon: Expand,
+			},
+			{
+				name: 'Download',
+				url: urls.download,
+				icon: Download,
 			},
 		],
 	},
