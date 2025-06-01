@@ -7,7 +7,7 @@ OuterTune do not allow importing stuff from youtube takeout. So, having only csv
 ## TODO
 
 - [x] - add data-table component
-- [ ] - add cards view to data-table component
+- [x] - add cards view to data-table component
 - [ ] - add proxy settings
 - [ ] - add imports page
 - [ ] - add exports page
