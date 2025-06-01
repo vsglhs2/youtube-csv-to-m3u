@@ -9,19 +9,28 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Button } from './ui/button';
 
+export type PaginationConfig = {
+	pageSizes: number[];
+	pageSize: number;
+	pageIndex: number;
+	enable: boolean;
+};
 
 interface DataTablePaginationProps<TData> {
+	config: PaginationConfig;
 	table: Table<TData>;
 }
 
 export function DataTablePagination<TData>({
+	config,
 	table,
 }: DataTablePaginationProps<TData>) {
+	if (!config.enable) return null;
+
 	const renderedSelectedColumns = table.options.enableRowSelection && (
 		<>
 			{table.getFilteredSelectedRowModel().rows.length} of{' '}
 			{table.getFilteredRowModel().rows.length} row(s) selected.
-
 		</>
 	);
 
@@ -43,7 +52,7 @@ export function DataTablePagination<TData>({
 							<SelectValue placeholder={table.getState().pagination.pageSize} />
 						</SelectTrigger>
 						<SelectContent side="top">
-							{[10, 20, 30, 40, 50].map((pageSize) => (
+							{config.pageSizes.map((pageSize) => (
 								<SelectItem key={pageSize} value={`${pageSize}`}>
 									{pageSize}
 								</SelectItem>

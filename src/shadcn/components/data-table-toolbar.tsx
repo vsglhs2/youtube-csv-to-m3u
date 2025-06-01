@@ -38,6 +38,8 @@ export type ToolbarItem<TData> =
 export type ToolbarConfig<TData = unknown> = {
 	items: ToolbarItem<TData>[];
 	actions: RowActions<TData>;
+	enableView: boolean;
+	enableActions: boolean;
 };
 
 export type ToolbarConfigInput<TData = unknown> = ToolbarConfig<TData>;
@@ -77,7 +79,8 @@ export function DataTableToolbar<TData>({
 		)
 	)).filter(Boolean);
 
-	const renderedResetButton = renderedToolbarItems.length && isFiltered ? (
+	const needRenderResetButton = renderedToolbarItems.length && isFiltered;
+	const renderedResetButton = needRenderResetButton ? (
 		<Button
 			variant="ghost"
 			onClick={() => table.resetColumnFilters()}
@@ -88,7 +91,11 @@ export function DataTableToolbar<TData>({
 		</Button>
 	) : null;
 
-	const needRenderActions = table.options.enableRowSelection && hasActions(table);
+	const needRenderActions = (
+		table.options.enableRowSelection &&
+		config.enableActions &&
+		hasActions(table)
+	);
 	const renderedGroupActions = needRenderActions && (
 		<DataTableGroupRowActions
 			data={selectedRows}
@@ -97,15 +104,26 @@ export function DataTableToolbar<TData>({
 		/>
 	);
 
-	return (
+	const renderedViewOptions = config.enableView && (
+		<DataTableViewOptions table={table} />
+	);
+
+	const needRenderToolbar = (
+		renderedToolbarItems.length ||
+		needRenderResetButton ||
+		needRenderActions ||
+		config.enableView
+	);
+
+	return needRenderToolbar && (
 		<div className="flex items-center justify-between">
 			<div className="flex flex-1 items-center space-x-2">
 				{renderedToolbarItems}
-				{renderedResetButton ?? null}
+				{renderedResetButton}
 			</div>
 			<div className='flex gap-2'>
 				{renderedGroupActions}
-				<DataTableViewOptions table={table} />
+				{renderedViewOptions}
 			</div>
 		</div>
 	);

@@ -29,7 +29,7 @@ export function DataTable<TData, TValue>({
 	config,
 	data,
 }: DataTableProps<TData, TValue>) {
-	const { columns, toolbar, enableRowSelection } = config;
+	const { columns, toolbar, pagination, enableRowSelection } = config;
 
 	const [rowSelection, setRowSelection] = React.useState({});
 	const [columnVisibility, setColumnVisibility] =
@@ -47,6 +47,9 @@ export function DataTable<TData, TValue>({
 			columnVisibility,
 			rowSelection,
 			columnFilters,
+		},
+		initialState: {
+			pagination,
 		},
 		enableRowSelection: enableRowSelection,
 		onRowSelectionChange: setRowSelection,
@@ -67,7 +70,7 @@ export function DataTable<TData, TValue>({
 		<div className="space-y-4">
 			<DataTableToolbar table={table} config={toolbar} />
 			{renderedTable}
-			<DataTablePagination table={table} />
+			<DataTablePagination table={table} config={pagination} />
 		</div>
 	);
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import type { Cell, CellContext, ColumnDef, ColumnDefTemplate, Table } from '@tanstack/react-table';
+import type { CellContext, ColumnDef, ColumnDefTemplate, Table } from '@tanstack/react-table';
 import type { JSX } from 'react';
 
 import { DataTableColumnHeader } from '../components/data-table-column-header';
@@ -8,6 +8,8 @@ import { DataTableRowActions, type RowActions } from '../components/data-table-r
 import { Checkbox } from '../components/ui/checkbox';
 import type { ToolbarConfig, ToolbarConfigInput } from '../components/data-table-toolbar';
 import { RowsDataTable } from '../components/rows-data-table';
+import { BentoGrid, type BentoCardProps, type GridPositioning } from '../components/ui/bento-grid';
+import type { PaginationConfig } from '../components/data-table-pagination';
 
 export type BaseColumnOptions = {
 	type: string;
@@ -143,22 +145,36 @@ function isSelectColumnOptions<TData>(
 
 export type TableConfig<TData> = {
 	toolbar: ToolbarConfig<TData>;
+	pagination: PaginationConfig;
 	columns: ColumnDef<TData>[];
 	renderer: DataTableRenderer<TData>;
 	enableRowSelection: boolean;
 };
 
 export function createTableConfig<TData>(
-	toolbar: ToolbarConfig<TData>['items'] = [],
 	columns: ColumnOptions<TData>[],
-	renderer = createRowsRenderer<TData>(),
+	options: {
+		toolbar?: ToolbarConfig<TData>['items'];
+		pagination?: PaginationConfig;
+		renderer?: DataTableRenderer<TData>;
+	} = {},
 ): TableConfig<TData> {
+	const {
+		toolbar = createToolbarItems(),
+		pagination = createPaginationConfig(),
+		renderer = createRowsRenderer<TData>(),
+	} = options;
 	const definitions: ColumnDef<TData>[] = [];
 
 	const actions = columns.find(c => c.type === 'actions')?.actions;
+	const isGridRenderer = renderer.rendererType === GRID_RENDERER;
+	const needEnableView = columns.some(c => c.type === 'cell' && c.hiding === undefined);
+
 	const finalToolbar: ToolbarConfig<TData> = {
 		items: toolbar ?? [],
 		actions: actions ?? [],
+		enableActions: !isGridRenderer,
+		enableView: !isGridRenderer && needEnableView,
 	};
 
 	for (const item of finalToolbar.items) {
@@ -182,10 +198,14 @@ export function createTableConfig<TData>(
 		definitions.push(definition);
 	}
 
-	const enableRowSelection = columns.some(isSelectColumnOptions);
+	const enableRowSelection = (
+		columns.some(isSelectColumnOptions) &&
+		finalToolbar.enableActions
+	);
 
 	return {
 		toolbar: finalToolbar,
+		pagination: pagination,
 		columns: definitions,
 		renderer: renderer,
 		enableRowSelection: enableRowSelection,
@@ -232,21 +252,66 @@ export function createToolbarItems<TData>(
 	return input;
 }
 
+const defaultPaginationConfig: PaginationConfig = {
+	pageIndex: 0,
+	pageSizes: [10, 20, 30, 40, 50],
+	pageSize: 10,
+	enable: true,
+};
+
+export function createPaginationConfig(
+	input: Partial<PaginationConfig> = {},
+): PaginationConfig {
+	return Object.assign({}, defaultPaginationConfig, input);
+}
+
 export type DataTableRendererProps<TData> = {
 	table: Table<TData>;
 };
 
-export type DataTableRenderer<TData> = (
+export type DataTableRendererInput<TData> = (
 	props: DataTableRendererProps<TData>
 ) => JSX.Element;
 
+
+export type DataTableRenderer<TData> = {
+	(props: DataTableRendererProps<TData>): JSX.Element;
+	rendererType: string;
+};
+
+export const GRID_RENDERER = 'grid';
+export const ROWS_RENDERER = 'rows';
+
 export function createRenderer<TData>(
-	renderer: DataTableRenderer<TData>,
+	Renderer: DataTableRendererInput<TData>,
+	type: string,
 ): DataTableRenderer<TData> {
 	// TODO: make use of it?
-	return renderer;
+	const wrapped: DataTableRendererInput<TData> = (props) => {
+		return <Renderer {...props} />;
+	};
+	Object.defineProperty(wrapped, 'rendererType', {
+		value: type,
+	});
+
+	return wrapped as DataTableRenderer<TData>;
 }
 
 export function createRowsRenderer<TData>(): DataTableRenderer<TData> {
-	return createRenderer(RowsDataTable);
+	return createRenderer(RowsDataTable, ROWS_RENDERER);
+}
+
+export function createGridRenderer<TData>(
+	map: (data: TData) => BentoCardProps,
+	grid: GridPositioning = [[0, 1]],
+) {
+	return createRenderer<TData>(({ table }) => {
+		const cards = table
+			.getRowModel()
+			.rows.map(row => map(row.original));
+
+		return (
+			<BentoGrid cards={cards} grid={grid} />
+		);
+	}, GRID_RENDERER);
 }
