@@ -6,11 +6,13 @@ import {
 	GlobeIcon,
 	InputIcon,
 } from '@radix-ui/react-icons';
+import { string, z } from 'zod';
+import { ArrowDown } from 'lucide-react';
 
 import { DataTable } from '@/shadcn/components/data-table';
 import { CsvImporter } from '@/shadcn/components/csv-importer';
 import { BentoCard, BentoGrid, type BentoCardProps } from '@/shadcn/components/ui/bento-grid';
-import { columns } from '@/shadcn/components/columns';
+import { createColumnsOptions, createTableConfig, createToolbarItems } from '@/shadcn/lib/table-config';
 
 const features: BentoCardProps[] = [
 	{
@@ -66,8 +68,69 @@ function BentoDemo() {
 	);
 }
 
+export const favoriteScheme = z.object({
+	videoId: string(),
+	songTitle: string().optional(),
+	albumTitle: string().optional(),
+	artistName1: string().optional(),
+	artistName2: string().optional(),
+	artistName3: string().optional(),
+});
+
+export type Favorite = z.infer<typeof favoriteScheme>;
+
+export const columns = createColumnsOptions<Favorite>(c => [
+	c.select(),
+	c.cell({
+		id: 'videoId',
+		header: 'Video Id',
+		sorting: false,
+		hiding: false,
+	}),
+	c.cell({
+		id: 'songTitle',
+		header: 'Song title',
+		sorting: false,
+	}),
+	c.cell({
+		id: 'albumTitle',
+		header: 'Album title',
+		hiding: false,
+	}),
+	c.cell({
+		id: 'artistName1',
+		header: 'Artist name1',
+	}),
+	c.actions({
+		label: 'Delete',
+		onClick(data) {
+			console.log('Delete:', data);
+		},
+		onGroup(data) {
+			console.log('Delete group:', data);
+		},
+	}),
+]);
+
+const toolbar = createToolbarItems<Favorite>({
+	type: 'search',
+	columnId: 'songTitle',
+	pluralTitle: 'songs',
+}, {
+	type: 'filter',
+	columnId: 'artistName1',
+	options: [{
+		label: 'Low',
+		value: 'low',
+		icon: ArrowDown,
+	}],
+	title: 'Song title',
+});
+
+const config = createTableConfig(columns, toolbar);
+
 export const PickerPage: FC = () => {
-	const [data, setData] = useState([]);
+	const [data, setData] = useState<Favorite[]>([]);
 
 	return (
 		<>
@@ -82,7 +145,8 @@ export const PickerPage: FC = () => {
 					{ label: 'Artist Name 3', value: 'Artist Name 3' },
 				]}
 				onImport={(parsedData) => {
-					const formattedData = parsedData.map(
+					// TODO: use scheme.parse
+					const formattedData = parsedData.map<Favorite>(
 						(item) => ({
 							videoId: item['Video Id'],
 							songTitle: item['Song Title'],
@@ -98,8 +162,7 @@ export const PickerPage: FC = () => {
 				}}
 				className="self-end"
 			/>
-			<DataTable data={[]} columns={columns} />
+			<DataTable data={data} config={config} />
 		</>
-
 	);
 };

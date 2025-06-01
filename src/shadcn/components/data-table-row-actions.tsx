@@ -2,55 +2,131 @@
 
 import type { Row } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
+import { Children, type PropsWithChildren, type ReactNode } from 'react';
 
-import { labels, taskSchema } from './columns';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 
+type RowActionCallback<TData> = (data: Row<TData>) => void;
+type RowActionsCallback<TData> = (data: Row<TData>[]) => void;
 
-interface DataTableRowActionsProps<TData> {
-	row: Row<TData>
-}
+export type RowAction<TData> = {
+	label: string;
+} & ({
+	onClick: RowActionCallback<TData>;
+	onGroup?: RowActionsCallback<TData>;
+} | {
+	onClick?: RowActionCallback<TData>;
+	onGroup: RowActionsCallback<TData>;
+});
 
-export function DataTableRowActions<TData>({
-	row,
-}: DataTableRowActionsProps<TData>) {
-	const task = taskSchema.parse(row.original);
+export type RowActions<TData = unknown> = RowAction<TData>[];
+
+type BaseDataTableRowActionsProps = PropsWithChildren<{
+	label?: string | ReactNode;
+}>;
+
+export function BaseDataTableRowActions({
+	label,
+	children,
+}: BaseDataTableRowActionsProps) {
+
+	const renderedActionsContainer = Children.count(children) ? (
+		<DropdownMenuContent align="end" className="w-[160px]">
+			{children}
+		</DropdownMenuContent>
+	) : null;
+
+	const renderedButton = label ? (
+		<Button
+			variant="outline"
+			size="sm"
+			className="ml-auto hidden h-8 lg:flex"
+		>
+			{label}
+		</Button>
+	) : (
+		<Button
+			variant="ghost"
+			className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+		>
+			<MoreHorizontal />
+			<span className="sr-only">Actions</span>
+		</Button>
+	);
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger>
-				<Button
-					variant="ghost"
-					className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-				>
-					<MoreHorizontal />
-					<span className="sr-only">Open menu</span>
-				</Button>
+				{renderedButton}
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-[160px]">
-				<DropdownMenuItem>Edit</DropdownMenuItem>
-				<DropdownMenuItem>Make a copy</DropdownMenuItem>
-				<DropdownMenuItem>Favorite</DropdownMenuItem>
-				<DropdownMenuSeparator />
-				<DropdownMenuSub>
-					<DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-					<DropdownMenuSubContent>
-						<DropdownMenuRadioGroup value={task.label}>
-							{labels.map((label) => (
-								<DropdownMenuRadioItem key={label.value} value={label.value}>
-									{label.label}
-								</DropdownMenuRadioItem>
-							))}
-						</DropdownMenuRadioGroup>
-					</DropdownMenuSubContent>
-				</DropdownMenuSub>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem>
-					Delete
-					<DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-				</DropdownMenuItem>
-			</DropdownMenuContent>
+			{renderedActionsContainer}
 		</DropdownMenu>
+	);
+}
+
+interface DataTableRowActionsProps<TData> {
+	data: Row<TData>;
+	actions: RowActions<TData>;
+	label?: string;
+}
+
+export function DataTableRowActions<TData>({
+	data,
+	actions,
+	label,
+}: DataTableRowActionsProps<TData>) {
+	const getActionHandler = (handler: RowActionCallback<TData>) => () => {
+		handler(data);
+	};
+
+	const renderedActions = actions
+		.filter(a => a.onClick)
+		.map((action, i) => (
+			<DropdownMenuItem
+				key={action.label + i}
+				onClick={getActionHandler(action.onClick!)}
+			>
+				{action.label}
+			</DropdownMenuItem>
+		));
+
+	return (
+		<BaseDataTableRowActions label={label}>
+			{renderedActions}
+		</BaseDataTableRowActions>
+	);
+}
+
+interface DataTableGroupRowActionsProps<TData> {
+	data: Row<TData>[];
+	actions: RowActions<TData>;
+	label?: string;
+}
+
+export function DataTableGroupRowActions<TData>({
+	data,
+	actions,
+	label,
+}: DataTableGroupRowActionsProps<TData>) {
+	const getActionHandler = (handler: RowActionsCallback<TData>) => () => {
+		handler(data);
+	};
+
+	const renderedActions = actions
+		.filter(a => a.onGroup)
+		.map((action, i) => (
+			<DropdownMenuItem
+				key={action.label + i}
+				onClick={getActionHandler(action.onGroup!)}
+			>
+				{action.label}
+			</DropdownMenuItem>
+		));
+
+	return (
+		<BaseDataTableRowActions label={label}>
+			{renderedActions}
+		</BaseDataTableRowActions>
 	);
 }

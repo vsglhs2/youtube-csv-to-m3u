@@ -21,16 +21,19 @@ import {
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import type { TableConfig } from '../lib/table-config';
 
 interface DataTableProps<TData, TValue> {
-	columns: ColumnDef<TData, TValue>[]
-	data: TData[]
+	config: TableConfig<TData>;
+	data: TData[];
 }
 
 export function DataTable<TData, TValue>({
-	columns,
+	config,
 	data,
 }: DataTableProps<TData, TValue>) {
+	const { columns, toolbar, enableRowSelection } = config;
+
 	const [rowSelection, setRowSelection] = React.useState({});
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({});
@@ -48,7 +51,7 @@ export function DataTable<TData, TValue>({
 			rowSelection,
 			columnFilters,
 		},
-		enableRowSelection: true,
+		enableRowSelection: enableRowSelection,
 		onRowSelectionChange: setRowSelection,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
@@ -63,7 +66,7 @@ export function DataTable<TData, TValue>({
 
 	return (
 		<div className="space-y-4">
-			<DataTableToolbar table={table} />
+			<DataTableToolbar table={table} config={toolbar} />
 			<div className="rounded-md border">
 				<Table>
 					<TableHeader>
