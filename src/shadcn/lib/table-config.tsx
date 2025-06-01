@@ -1,11 +1,13 @@
 'use client';
 
 import type { Cell, CellContext, ColumnDef, ColumnDefTemplate, Table } from '@tanstack/react-table';
+import type { JSX } from 'react';
 
 import { DataTableColumnHeader } from '../components/data-table-column-header';
 import { DataTableRowActions, type RowActions } from '../components/data-table-row-actions';
 import { Checkbox } from '../components/ui/checkbox';
 import type { ToolbarConfig, ToolbarConfigInput } from '../components/data-table-toolbar';
+import { RowsDataTable } from '../components/rows-data-table';
 
 export type BaseColumnOptions = {
 	type: string;
@@ -140,14 +142,16 @@ function isSelectColumnOptions<TData>(
 }
 
 export type TableConfig<TData> = {
-	columns: ColumnDef<TData>[];
 	toolbar: ToolbarConfig<TData>;
+	columns: ColumnDef<TData>[];
+	renderer: DataTableRenderer<TData>;
 	enableRowSelection: boolean;
 };
 
 export function createTableConfig<TData>(
-	columns: ColumnOptions<TData>[],
 	toolbar: ToolbarConfig<TData>['items'] = [],
+	columns: ColumnOptions<TData>[],
+	renderer = createRowsRenderer<TData>(),
 ): TableConfig<TData> {
 	const definitions: ColumnDef<TData>[] = [];
 
@@ -181,8 +185,9 @@ export function createTableConfig<TData>(
 	const enableRowSelection = columns.some(isSelectColumnOptions);
 
 	return {
-		columns: definitions,
 		toolbar: finalToolbar,
+		columns: definitions,
+		renderer: renderer,
 		enableRowSelection: enableRowSelection,
 	};
 }
@@ -225,4 +230,23 @@ export function createToolbarItems<TData>(
 	...input: ToolbarConfigInput<TData>['items']
 ): ToolbarConfig<TData>['items'] {
 	return input;
+}
+
+export type DataTableRendererProps<TData> = {
+	table: Table<TData>;
+};
+
+export type DataTableRenderer<TData> = (
+	props: DataTableRendererProps<TData>
+) => JSX.Element;
+
+export function createRenderer<TData>(
+	renderer: DataTableRenderer<TData>,
+): DataTableRenderer<TData> {
+	// TODO: make use of it?
+	return renderer;
+}
+
+export function createRowsRenderer<TData>(): DataTableRenderer<TData> {
+	return createRenderer(RowsDataTable);
 }

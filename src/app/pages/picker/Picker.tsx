@@ -7,12 +7,12 @@ import {
 	InputIcon,
 } from '@radix-ui/react-icons';
 import { string, z } from 'zod';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, FileIcon } from 'lucide-react';
 
 import { DataTable } from '@/shadcn/components/data-table';
 import { CsvImporter } from '@/shadcn/components/csv-importer';
 import { BentoCard, BentoGrid, type BentoCardProps } from '@/shadcn/components/ui/bento-grid';
-import { createColumnsOptions, createTableConfig, createToolbarItems } from '@/shadcn/lib/table-config';
+import { createColumnsOptions, createRenderer, createRowsRenderer, createTableConfig, createToolbarItems } from '@/shadcn/lib/table-config';
 
 const features: BentoCardProps[] = [
 	{
@@ -127,7 +127,32 @@ const toolbar = createToolbarItems<Favorite>({
 	title: 'Song title',
 });
 
-const config = createTableConfig(columns, toolbar);
+const cardsRenderer = createRenderer<Favorite>(({ table }) => {
+	const cards = table.getRowModel().rows.map<BentoCardProps>(row => ({
+		name: row.original.videoId,
+		description: row.original.songTitle ?? 'No song title',
+		cta: 'Download',
+		className: '',
+		href: '',
+		Icon: FileIcon,
+	}));
+
+	const renderedCards = cards.map((card) => (
+		<BentoCard key={card.name} {...card} />
+	));
+
+	return cards.length ? (
+		<BentoGrid className="lg:grid-rows-4 lg:grid-cols-4">
+			{renderedCards}
+		</BentoGrid>
+	) : (
+		<div className="rounded-md border h-24 text-center content-center w-full">
+			No results.
+		</div>
+	);
+});
+
+const config = createTableConfig(toolbar, columns, cardsRenderer);
 
 export const PickerPage: FC = () => {
 	const [data, setData] = useState<Favorite[]>([]);
