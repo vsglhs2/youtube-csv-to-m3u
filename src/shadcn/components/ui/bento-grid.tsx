@@ -61,7 +61,7 @@ export function createGridClassNames(...rows: GridPositioning) {
 }
 
 const BentoGrid = ({
-	grid: rows,
+	grid: grid,
 	cards,
 	className,
 }: {
@@ -73,7 +73,7 @@ const BentoGrid = ({
 		classNameById,
 		containerClassName,
 		size,
-	} = createGridClassNames(...rows);
+	} = createGridClassNames(...grid);
 
 	const gridsAmount = Math.ceil(cards.length / size);
 	const renderedGrids = new Array(gridsAmount).fill(null).map((_, group) => {
@@ -108,7 +108,7 @@ const BentoGrid = ({
 		<div className="rounded-md border h-24 text-center content-center w-full">
 			No results.
 		</div>
-	); ;
+	);
 };
 
 export type BentoCardProps = {
@@ -144,7 +144,6 @@ const BentoCard = ({
 
 	const asChild = Boolean(href);
 
-	console.log(cta, name, renderedButtonContent);
 	return (
 		<div
 			key={name}
