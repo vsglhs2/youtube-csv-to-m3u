@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Button } from './ui/button';
 
 interface DataTableViewOptionsProps<TData> {
-  table: Table<TData>
+	table: Table<TData>;
 }
 
 export function DataTableViewOptions<TData>({
@@ -22,7 +22,7 @@ export function DataTableViewOptions<TData>({
 					className="ml-auto hidden h-8 lg:flex"
 				>
 					<Settings2 />
-          View
+					View
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-[150px]">

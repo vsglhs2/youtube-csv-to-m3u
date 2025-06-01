@@ -10,13 +10,13 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Separator } from './ui/separator';
 
 interface DataTableFacetedFilterProps<TData, TValue> {
-  column?: Column<TData, TValue>
-  title?: string
-  options: {
-    label: string
-    value: string
-    icon?: React.ComponentType<{ className?: string }>
-  }[]
+	column?: Column<TData, TValue>;
+	title?: string;
+	options: {
+		label: string;
+		value: string;
+		icon?: React.ComponentType<{ className?: string }>;
+	}[];
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
@@ -122,7 +122,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 										onSelect={() => column?.setFilterValue(undefined)}
 										className="justify-center text-center"
 									>
-                    Clear filters
+										Clear filters
 									</CommandItem>
 								</CommandGroup>
 							</>

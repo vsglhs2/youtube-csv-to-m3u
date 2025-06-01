@@ -53,13 +53,13 @@ interface CsvImporterProps
 		 * Field display label shown to the user.
 		 * @example "Name"
 		 */
-		label: string
+		label: string;
 
 		/**
 		 * Key identifying the field in the imported data.
 		 * @example "name"
 		 */
-		value: string
+		value: string;
 
 		/**
 		 * Optional flag indicating if the field is required.
@@ -67,15 +67,15 @@ interface CsvImporterProps
 		 * @default false
 		 * @example true
 		 */
-		required?: boolean
-	}[]
+		required?: boolean;
+	}[];
 
 	/**
 	 * Callback function called on data import.
 	 * Receives an array of records as key-value pairs.
 	 * @example onImport={(data) => console.log(data)}
 	 */
-	onImport: (data: Record<string, unknown>[]) => void
+	onImport: (data: Record<string, string>[]) => void;
 }
 
 export function CsvImporter({
@@ -218,11 +218,11 @@ export function CsvImporter({
 
 interface PreviewTableHeadProps
 	extends React.ThHTMLAttributes<HTMLTableCellElement> {
-	field: { label: string; value: string; required?: boolean }
-	onFieldChange: (props: { value: string; required?: boolean }) => void
-	onFieldToggle: (props: { value: string; checked: boolean }) => void
-	currentFieldMapping: string | undefined
-	originalFieldMappings: Record<string, string | undefined>
+	field: { label: string; value: string; required?: boolean };
+	onFieldChange: (props: { value: string; required?: boolean }) => void;
+	onFieldToggle: (props: { value: string; checked: boolean }) => void;
+	currentFieldMapping: string | undefined;
+	originalFieldMappings: Record<string, string | undefined>;
 }
 
 function PreviewTableHead({

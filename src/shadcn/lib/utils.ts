@@ -8,8 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 export function formatBytes(
 	bytes: number,
 	opts: {
-    decimals?: number
-    sizeType?: 'accurate' | 'normal'
+    decimals?: number;
+    sizeType?: 'accurate' | 'normal';
   } = {},
 ) {
 	const { decimals = 0, sizeType = 'normal' } = opts;

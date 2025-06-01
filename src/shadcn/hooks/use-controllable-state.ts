@@ -7,12 +7,12 @@ import { useCallbackRef } from '@/shadcn/hooks/use-callback-ref';
  */
 
 type UseControllableStateParams<T> = {
-  prop?: T | undefined
-  defaultProp?: T | undefined
-  onChange?: (state: T) => void
-}
+  prop?: T | undefined;
+  defaultProp?: T | undefined;
+  onChange?: (state: T) => void;
+};
 
-type SetStateFn<T> = (prevState?: T) => T
+type SetStateFn<T> = (prevState?: T) => T;
 
 function useControllableState<T>({
 	prop,

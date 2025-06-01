@@ -4,16 +4,16 @@ import * as Papa from 'papaparse';
 import { getErrorMessage } from '@/shadcn/lib/handle-error';
 
 interface CsvState {
-  fileName: string
+  fileName: string;
   data: {
-    parsed: Record<string, unknown>[]
-    mapped: Record<string, unknown>[]
-  }
+    parsed: Record<string, unknown>[];
+    mapped: Record<string, unknown>[];
+  };
   fieldMappings: {
-    original: Record<string, string | undefined>
-    current: Record<string, string | undefined>
-  }
-  error: string | null
+    original: Record<string, string | undefined>;
+    current: Record<string, string | undefined>;
+  };
+  error: string | null;
 }
 
 interface UseParseCsvProps extends Papa.ParseConfig {
@@ -22,28 +22,28 @@ interface UseParseCsvProps extends Papa.ParseConfig {
    * Each field includes a label, value, and optional required flag.
    * @example fields={[{ label: 'Name', value: 'name', required: true }, { label: 'Email', value: 'email' }]}
    */
-  fields: { label: string; value: string; required?: boolean }[]
+  fields: { label: string; value: string; required?: boolean }[];
 
   /**
    * Callback function invoked when data is successfully parsed.
    * Receives an array of records representing the imported data.
    * @example onSuccess={(data) => console.log(data)}
    */
-  onSuccess?: (data: Record<string, unknown>[]) => void
+  onSuccess?: (data: Record<string, unknown>[]) => void;
 
   /**
    * Callback function invoked when an error occurs during parsing.
    * Receives an error message.
    * @example onError={(message) => console.error(message)}
    */
-  onError?: (message: string) => void
+  onError?: (message: string) => void;
 
   /**
    * Flag to indicate if empty fields should be shown.
    * @default false
    * @example showEmptyFields={true}
    */
-  showEmptyFields?: boolean
+  showEmptyFields?: boolean;
 }
 
 export function useParseCsv({
@@ -159,8 +159,8 @@ export function useParseCsv({
 		oldValue,
 		newValue,
 	}: {
-    oldValue: string
-    newValue: string
+    oldValue: string;
+    newValue: string;
   }) {
 		setCsvState((prevState) => ({
 			...prevState,
@@ -182,8 +182,8 @@ export function useParseCsv({
 		value,
 		checked,
 	}: {
-    value: string
-    checked: boolean
+    value: string;
+    checked: boolean;
   }) {
 		setCsvState((prevState) => ({
 			...prevState,
