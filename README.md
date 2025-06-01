@@ -6,9 +6,12 @@ OuterTune do not allow importing stuff from youtube takeout. So, having only csv
 
 ## TODO
 
+- [x] - add data-table component
+- [ ] - add cards view to data-table component
 - [ ] - add proxy settings
 - [ ] - add imports page
-- [ ] - add import page
+- [ ] - add exports page
+- [ ] - add collection (?) page
 - [ ] - add picker page
 - [ ] - store imported information in idb
 - [ ] - create m3u file on csv import
