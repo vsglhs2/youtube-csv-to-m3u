@@ -156,7 +156,10 @@ export type TableConfig<TData> = {
 	columns: ColumnDef<TData>[];
 	renderer: DataTableRenderer<TData>;
 	enableRowSelection: boolean;
+	mode: TableMode;
 };
+
+export type TableMode = 'rows' | 'columns';
 
 export function createTableConfig<TData>(
 	columns: ColumnOptions<TData>[],
@@ -164,12 +167,14 @@ export function createTableConfig<TData>(
 		toolbar?: ToolbarConfig<TData>['items'];
 		pagination?: PaginationConfig;
 		renderer?: DataTableRenderer<TData>;
+		mode?: TableMode;
 	} = {},
 ): TableConfig<TData> {
 	const {
 		toolbar = createToolbarItems(),
 		pagination = createPaginationConfig(),
 		renderer = createRowsRenderer<TData>(),
+		mode = 'rows',
 	} = options;
 	const definitions: ColumnDef<TData>[] = [];
 
@@ -223,6 +228,7 @@ export function createTableConfig<TData>(
 		columns: definitions,
 		renderer: renderer,
 		enableRowSelection: enableRowSelection,
+		mode: mode,
 	};
 }
 
@@ -280,6 +286,7 @@ export function createPaginationConfig(
 }
 
 export type DataTableRendererProps<TData> = {
+	config: TableConfig<TData>;
 	table: Table<TData>;
 };
 

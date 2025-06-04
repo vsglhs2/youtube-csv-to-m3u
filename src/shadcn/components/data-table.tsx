@@ -64,7 +64,7 @@ export function DataTable<TData, TValue>({
 		getFacetedUniqueValues: getFacetedUniqueValues(),
 	});
 
-	const renderedTable = <config.renderer table={table} />;
+	const renderedTable = <config.renderer table={table} config={config} />;
 
 	return (
 		<div className="space-y-4">

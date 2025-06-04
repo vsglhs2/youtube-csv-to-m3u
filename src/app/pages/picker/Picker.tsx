@@ -191,7 +191,9 @@ function createTransformTableConfigFromData<
 
 				if (status.type === 'success') {
 					const rowData = [status.payload.data];
+
 					const config = createTableFromData(rowData);
+					config.mode = 'columns';
 
 					renderedContent = (
 						<DataTable data={rowData} config={config} />
@@ -228,7 +230,9 @@ function createTransformTableConfigFromData<
 			header: 'Data',
 			cell({ row }) {
 				const rowData = [row.original.source];
+
 				const config = createTableFromData(rowData);
+				config.mode = 'columns';
 
 				return (
 					<HoverCard>
