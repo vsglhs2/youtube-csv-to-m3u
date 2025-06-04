@@ -7,11 +7,13 @@ import { Children, type PropsWithChildren, type ReactNode } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 
+type CanShowRowActionCallback<TData> = (data: Row<TData>) => boolean;
 type RowActionCallback<TData> = (data: Row<TData>) => void;
 type RowActionsCallback<TData> = (data: Row<TData>[]) => void;
 
 export type RowAction<TData> = {
 	label: string;
+	canShow?: CanShowRowActionCallback<TData>;
 } & ({
 	onClick: RowActionCallback<TData>;
 	onGroup?: RowActionsCallback<TData>;
@@ -81,7 +83,7 @@ export function DataTableRowActions<TData>({
 	};
 
 	const renderedActions = actions
-		.filter(a => a.onClick)
+		.filter(a => (a.canShow ? a.canShow(data) : true) && a.onClick)
 		.map((action, i) => (
 			<DropdownMenuItem
 				key={action.label + i}

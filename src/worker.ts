@@ -54,6 +54,7 @@ export class Session {
 	}
 
 	async getYTSearchPort() {
+		console.log('setup yt-search in worker');
 		const yts = await setupYTSearch();
 		const { port1, port2 } = new MessageChannel();
 

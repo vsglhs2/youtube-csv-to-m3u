@@ -234,6 +234,7 @@ export function useParseCsv({
 	return {
 		fileName: csvState.fileName,
 		data: csvState.data.mapped,
+		originalData: csvState.data.parsed,
 		fieldMappings: csvState.fieldMappings,
 		error: csvState.error,
 		getSanitizedData,

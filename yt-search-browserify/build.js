@@ -30,6 +30,9 @@ browserify()
 	.require('./modules/querystring.js', {
 		expose: 'querystring',
 	})
+	.require('./modules/http2.js', {
+		expose: 'http2',
+	})
 	.bundle()
 	.on('error', (error) => {
 		console.dir(error, { depth: 1 });

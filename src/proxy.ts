@@ -5,6 +5,7 @@ declare global {
 self.getProxiedUrl = getProxiedUrl;
 
 export type ProxyScheme = {
+	name: string;
     encode: boolean;
     pattern: string;
 };
@@ -141,6 +142,7 @@ export function setupXMLHttpRequestProxy() {
 }
 
 let proxyScheme: ParsedProxyScheme = parseProxyScheme({
+	name: 'Default proxy',
 	encode: true,
 	pattern: import.meta.env.VITE_APP_PROXY_SCHEME,
 });

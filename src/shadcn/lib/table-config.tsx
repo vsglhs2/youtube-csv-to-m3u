@@ -75,7 +75,8 @@ function actionsColumn<TData>(
 
 export type CellColumnOptions<TData = unknown> = BaseColumnOptions & {
 	type: 'cell';
-	id: keyof TData;
+	id?: string;
+	accessor?: keyof TData;
 	header: string;
 	cell?: ColumnDefTemplate<CellContext<TData, unknown>>;
 	sorting?: boolean;
@@ -85,14 +86,20 @@ export type CellColumnOptions<TData = unknown> = BaseColumnOptions & {
 
 function cellColumn<TData>({
 	id,
+	accessor,
 	header: title,
 	cell,
 	filtering,
 	hiding,
 	sorting,
 }: WithoutBase<CellColumnOptions<TData>>): ColumnDef<TData> {
+	if (!id && !accessor) {
+		throw new Error('Either accessor or id must be specified');
+	}
+
 	const columnDefinition: ColumnDef<TData> = {
-		accessorKey: id,
+		id: id!,
+		accessorKey: accessor,
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title={title} />
 		),
@@ -168,16 +175,8 @@ export function createTableConfig<TData>(
 
 	const actions = columns.find(c => c.type === 'actions')?.actions;
 	const isGridRenderer = renderer.rendererType === GRID_RENDERER;
-	const needEnableView = columns.some(c => c.type === 'cell' && c.hiding === undefined);
 
-	const finalToolbar: ToolbarConfig<TData> = {
-		items: toolbar ?? [],
-		actions: actions ?? [],
-		enableActions: !isGridRenderer,
-		enableView: !isGridRenderer && needEnableView,
-	};
-
-	for (const item of finalToolbar.items) {
+	for (const item of toolbar) {
 		if (item.type !== 'filter') continue;
 
 		const column = columns.find(c =>
@@ -189,6 +188,10 @@ export function createTableConfig<TData>(
 	}
 
 	for (const column of columns) {
+		if (column.type === 'cell' && !column.accessor) {
+			column.hiding = false;
+		}
+
 		const create = columnCreatorRecord[column.type];
 		if (!create) throw new Error(`Can't create ${column.type} column`);
 
@@ -197,6 +200,17 @@ export function createTableConfig<TData>(
 
 		definitions.push(definition);
 	}
+
+	const needEnableView = columns.some(
+		c => c.type === 'cell' && (c.hiding === undefined || c.hiding),
+	);
+
+	const finalToolbar: ToolbarConfig<TData> = {
+		items: toolbar ?? [],
+		actions: actions ?? [],
+		enableActions: !isGridRenderer,
+		enableView: !isGridRenderer && needEnableView,
+	};
 
 	const enableRowSelection = (
 		columns.some(isSelectColumnOptions) &&
@@ -236,7 +250,7 @@ function createColumnFactory<TData>() {
 }
 
 // TODO: add schema validation
-export function createColumnsOptions<TData>(
+export function createColumnsOptions<TData = Record<string, unknown>>(
 	factory: (
 		column: ReturnType<typeof createColumnFactory<TData>>
 	) => ColumnOptions<TData>[],

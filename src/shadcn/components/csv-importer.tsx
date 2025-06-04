@@ -116,9 +116,6 @@ export function CsvImporter({
 						multiple={false}
 						maxSize={4 * 1024 * 1024}
 						maxFileCount={1}
-						/**
-			 * alternatively this can be used without uploading the file
-			 */
 						onValueChange={(files) => {
 							const file = files[0];
 							if (!file) return;
@@ -127,14 +124,6 @@ export function CsvImporter({
 
 							setStep('map');
 						}}
-						// onUpload={async (files) => {
-						//   const file = files[0]
-						//   if (!file) return
-						//   await onUpload(files)
-
-						//   onParse({ file, limit: 1001 })
-						//   setStep("map")
-						// }}
 						disabled={false}
 					/>
 				</DialogContent>
@@ -202,9 +191,15 @@ export function CsvImporter({
 						<Button
 							onClick={async () => {
 								await new Promise((resolve) => setTimeout(resolve, 100));
-								onImport(getSanitizedData({ data }));
-								setOpen(false);
-								setStep('upload');
+								const sanitizedData = getSanitizedData({ data });
+
+								try {
+									onImport(sanitizedData);
+									setOpen(false);
+									setStep('upload');
+								} catch (error) {
+									console.error(error);
+								}
 							}}
 						>
 							Import
