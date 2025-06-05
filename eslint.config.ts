@@ -34,6 +34,7 @@ module.exports = [
 
 			'@typescript-eslint/no-unused-vars': 'warn',
 			'@typescript-eslint/consistent-type-imports': 'error',
+
 			'@stylistic/semi': ['error', 'always'],
 			'@stylistic/semi-spacing': ['error', { 'before': false, 'after': true }],
 			'@stylistic/semi-style': ['error', 'last'],
@@ -49,6 +50,7 @@ module.exports = [
 					'newlines-between': 'always',
 				},
 			],
+			'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
 		},
 	},
 ];
