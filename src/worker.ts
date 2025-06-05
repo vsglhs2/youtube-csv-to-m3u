@@ -1,7 +1,8 @@
 import { expose, transfer } from 'comlink';
 
 import { getProxyScheme, setProxyScheme, setupXMLHttpRequestProxy } from './proxy';
-import { initYTSearch, type YTSearch } from './yt-search';
+import { initYTSearch  } from './yt-search';
+import type {YTSearch} from './yt-search';
 
 function walkAndMutateRecursive(
 	object: Record<PropertyKey, unknown>,
@@ -28,7 +29,7 @@ async function setupYTSearch(): Promise<YTSearch> {
 		async apply(target, thisArg, argArray: [never]) {
 			const promise = target.apply(thisArg, argArray);
 
-			return promise.then(result => {
+			return promise.then((result) => {
 				if (!(result && result instanceof Object)) {
 					return result;
 				}

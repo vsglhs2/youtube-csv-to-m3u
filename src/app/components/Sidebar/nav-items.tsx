@@ -1,6 +1,4 @@
-import {
-	type LucideIcon,
-} from 'lucide-react';
+import type {LucideIcon} from 'lucide-react';
 import type { FC } from 'react';
 import { Link } from 'react-router';
 

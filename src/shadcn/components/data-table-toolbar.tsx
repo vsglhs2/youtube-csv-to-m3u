@@ -6,7 +6,8 @@ import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { DataTableViewOptions } from './data-table-view-options';
-import { DataTableGroupRowActions, type RowActions } from './data-table-row-actions';
+import { DataTableGroupRowActions  } from './data-table-row-actions';
+import type {RowActions} from './data-table-row-actions';
 import { hasActions } from '../lib/table-config';
 
 export type ToolbarItemBase<TData> = {
@@ -58,7 +59,7 @@ export function DataTableToolbar<TData>({
 
 	const { actions, items } = config;
 
-	const renderedToolbarItems = items.map(item => item.type === 'search' ? (
+	const renderedToolbarItems = items.map((item) => item.type === 'search' ? (
 		<Input
 			key={item.type + item.columnId}
 			placeholder={`Filter ${item.pluralTitle}...`}

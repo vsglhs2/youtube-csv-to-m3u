@@ -4,11 +4,13 @@ import type { CellContext, ColumnDef, ColumnDefTemplate, Table } from '@tanstack
 import type { JSX } from 'react';
 
 import { DataTableColumnHeader } from '../components/data-table-column-header';
-import { DataTableRowActions, type RowActions } from '../components/data-table-row-actions';
+import { DataTableRowActions  } from '../components/data-table-row-actions';
+import type {RowActions} from '../components/data-table-row-actions';
 import { Checkbox } from '../components/ui/checkbox';
 import type { ToolbarConfig, ToolbarConfigInput } from '../components/data-table-toolbar';
 import { RowsDataTable } from '../components/rows-data-table';
-import { BentoGrid, type BentoCardProps, type GridPositioning } from '../components/ui/bento-grid';
+import { BentoGrid   } from '../components/ui/bento-grid';
+import type {BentoCardProps, GridPositioning} from '../components/ui/bento-grid';
 import type { PaginationConfig } from '../components/data-table-pagination';
 
 export type BaseColumnOptions = {
@@ -186,13 +188,13 @@ export function createTableConfig<TData>(
 	} = options;
 	const definitions: ColumnDef<TData>[] = [];
 
-	const actions = columns.find(c => c.type === 'actions')?.actions;
+	const actions = columns.find((c) => c.type === 'actions')?.actions;
 	const isGridRenderer = renderer.rendererType === GRID_RENDERER;
 
 	for (const item of toolbar) {
 		if (item.type !== 'filter') continue;
 
-		const column = columns.find(c =>
+		const column = columns.find((c) =>
 			isCellColumnOptions(c) && c.id === item.columnId,
 		);
 		if (!column || !isCellColumnOptions(column)) continue;
@@ -219,10 +221,10 @@ export function createTableConfig<TData>(
 	}
 
 	const needEnableView = columns.some(
-		c => c.type === 'cell' && (c.hiding === undefined || c.hiding),
+		(c) => c.type === 'cell' && (c.hiding === undefined || c.hiding),
 	);
 
-	const finalActions = (actions ?? []).map(action => ({
+	const finalActions = (actions ?? []).map((action) => ({
 		canClick: () => true,
 		...action,
 	}));
@@ -348,7 +350,7 @@ export function createGridRenderer<TData>(
 	return createRenderer<TData>(({ table }) => {
 		const cards = table
 			.getRowModel()
-			.rows.map(row => map(row.original));
+			.rows.map((row) => map(row.original));
 
 		return (
 			<BentoGrid cards={cards} grid={grid} />

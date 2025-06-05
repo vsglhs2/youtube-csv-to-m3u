@@ -1,21 +1,24 @@
-import { useEffect, useReducer, useRef, useState, type FC, type ReactNode } from 'react';
+import { useEffect, useReducer, useRef, useState   } from 'react';
+import type {FC, ReactNode} from 'react';
 import { ListRestart, MoreHorizontal } from 'lucide-react';
 import type { ZodError } from 'zod/v4';
 import { z } from 'zod/v4';
-import { wrap, type Remote } from 'comlink';
+import { wrap  } from 'comlink';
+import type {Remote} from 'comlink';
 
 import { DataTable } from '@/shadcn/components/data-table';
 import { CsvImporter } from '@/shadcn/components/csv-importer';
 import { createColumnsOptions, createGridRenderer, createPaginationConfig, createTableConfig, createToolbarItems, getDefaultPaginationConfig } from '@/shadcn/lib/table-config';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn/components/ui/popover';
 import { Button } from '@/shadcn/components/ui/button';
-import type { ProxyScheme } from '@/proxy';
+import type {ProxyScheme} from '@/proxy';
 import type { YTSearch } from '@/yt-search';
 import type { Session as RemoteSession } from '@/worker';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/shadcn/components/ui/hover-card';
 import { Badge } from '@/shadcn/components/ui/badge';
 import type { ComboboxStatus } from '@/shadcn/components/combobox';
-import { ComboboxPopover, type ComboboxPopoverStatusCallback } from '@/shadcn/components/combobox';
+import { ComboboxPopover  } from '@/shadcn/components/combobox';
+import type {ComboboxPopoverStatusCallback} from '@/shadcn/components/combobox';
 
 const authorSchema = z.object({
 	name: z.string(),
@@ -433,15 +436,15 @@ export type TransformError<PreTransform> = ZodError | unknown;
 export type TransformState<PreTransform, Transform> =
 	| {
 		type: 'idle';
-		payload: {};
+		payload: Record<never, unknown>;
 	}
 	| {
 		type: 'stopped';
-		payload: {};
+		payload: Record<never, unknown>;
 	}
 	| {
 		type: 'released';
-		payload: {};
+		payload: Record<never, unknown>;
 	}
 	| {
 		type: 'queueing';
@@ -601,8 +604,7 @@ function createFavoritesTransform<
 			if (error instanceof ReleaseQueueSessionError) {
 				yield {
 					type: 'released',
-					payload: {
-					},
+					payload: {},
 				};
 
 				return;

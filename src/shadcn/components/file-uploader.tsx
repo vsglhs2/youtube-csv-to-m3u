@@ -2,10 +2,8 @@
 
 import * as React from 'react';
 import { CrossIcon, FileTextIcon, UploadIcon } from 'lucide-react';
-import Dropzone, {
-	type DropzoneProps,
-	type FileRejection,
-} from 'react-dropzone';
+import Dropzone from 'react-dropzone';
+import type {DropzoneProps, FileRejection} from 'react-dropzone';
 import { toast } from 'sonner';
 
 import { cn, formatBytes } from '@/shadcn/lib/utils';

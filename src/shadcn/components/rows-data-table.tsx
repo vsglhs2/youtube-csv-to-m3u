@@ -112,7 +112,7 @@ export function RowsDataTable<TData>({
 				key={row.id}
 				data-state={row.getIsSelected() && 'selected'}
 			>
-				{row.getVisibleCells().map(cell => (
+				{row.getVisibleCells().map((cell) => (
 					<RowsDataTableCell
 						key={cell.id}
 						cell={cell}
