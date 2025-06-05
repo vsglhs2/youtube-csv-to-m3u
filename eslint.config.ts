@@ -38,6 +38,7 @@ module.exports = [
 			'@stylistic/semi-spacing': ['error', { 'before': false, 'after': true }],
 			'@stylistic/semi-style': ['error', 'last'],
 			'@stylistic/member-delimiter-style': ['error'],
+			'@stylistic/arrow-parens': ['error'],
 
 			'import/order': [
 				'error',
