@@ -2,10 +2,10 @@ import type { Cell, Table as TableType } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from './ui/table';
-import type { TableConfig, TableMode } from '../lib/table-config';
+import type { CellColumnMeta, TableConfig, TableMode } from '../lib/table-config';
 import { cn } from '../lib/utils';
-import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
 import { CopyToClipboard } from './ui/copy-to-clipboard';
+import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from './ui/context-menu';
 
 type RowsDataTableCellProps<TData> = {
 	cell: Cell<TData, unknown>;
@@ -16,6 +16,31 @@ export function RowsDataTableCell<TData>({
 	cell,
 	classNameRecord,
 }: RowsDataTableCellProps<TData>) {
+	const { meta } = cell.column.columnDef;
+
+	const renderedCellContent = flexRender(
+		cell.column.columnDef.cell,
+		cell.getContext(),
+	);
+
+	const needRenderPreview = Boolean(
+		meta && (meta as CellColumnMeta<TData>).previewing,
+	);
+	const renderedCellBody = needRenderPreview ? (
+		<ContextMenu>
+			<ContextMenuTrigger>
+				{renderedCellContent}
+			</ContextMenuTrigger>
+			<ContextMenuContent className="p-2 w-72">
+				<CopyToClipboard>
+					{String(cell.renderValue())}
+				</CopyToClipboard>
+			</ContextMenuContent>
+		</ContextMenu>
+	) : (
+		renderedCellContent
+	);
+
 	return (
 		<TableCell
 			className={cn(
@@ -23,23 +48,7 @@ export function RowsDataTableCell<TData>({
 				classNameRecord.cell,
 			)}
 		>
-			<Popover>
-				<PopoverTrigger>
-					{flexRender(
-						cell.column.columnDef.cell,
-						cell.getContext(),
-					)}
-				</PopoverTrigger>
-				<PopoverContent
-					side="top"
-					align="center"
-				>
-					<CopyToClipboard>
-						{String(cell.renderValue())}
-					</CopyToClipboard>
-				</PopoverContent>
-			</Popover>
-
+			{renderedCellBody}
 		</TableCell>
 	);
 }

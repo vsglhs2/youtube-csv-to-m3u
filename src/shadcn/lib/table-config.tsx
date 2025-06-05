@@ -69,7 +69,7 @@ function actionsColumn<TData>(
 				data={row}
 				actions={options.actions}
 			/>
-		) ,
+		),
 	};
 }
 
@@ -82,17 +82,24 @@ export type CellColumnOptions<TData = unknown> = BaseColumnOptions & {
 	sorting?: boolean;
 	hiding?: boolean;
 	filtering?: boolean;
+	previewing?: boolean;
 };
 
-function cellColumn<TData>({
-	id,
-	accessor,
-	header: title,
-	cell,
-	filtering,
-	hiding,
-	sorting,
-}: WithoutBase<CellColumnOptions<TData>>): ColumnDef<TData> {
+export type CellColumnMeta<TData> = CellColumnOptions<TData>;
+
+function cellColumn<TData>(
+	options: WithoutBase<CellColumnOptions<TData>>,
+): ColumnDef<TData> {
+	const {
+		id,
+		accessor,
+		header: title,
+		cell,
+		filtering,
+		hiding,
+		sorting,
+	} = options;
+
 	if (!id && !accessor) {
 		throw new Error('Either accessor or id must be specified');
 	}
@@ -103,6 +110,7 @@ function cellColumn<TData>({
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title={title} />
 		),
+		meta: options,
 	};
 
 	if (cell) {
@@ -197,6 +205,10 @@ export function createTableConfig<TData>(
 			column.hiding = false;
 		}
 
+		if (column.type === 'cell' && !('previewing' in column)) {
+			column.previewing = true;
+		}
+
 		const create = columnCreatorRecord[column.type];
 		if (!create) throw new Error(`Can't create ${column.type} column`);
 
@@ -210,9 +222,14 @@ export function createTableConfig<TData>(
 		c => c.type === 'cell' && (c.hiding === undefined || c.hiding),
 	);
 
+	const finalActions = (actions ?? []).map(action => ({
+		canClick: () => true,
+		...action,
+	}));
+
 	const finalToolbar: ToolbarConfig<TData> = {
 		items: toolbar ?? [],
-		actions: actions ?? [],
+		actions: finalActions,
 		enableActions: !isGridRenderer,
 		enableView: !isGridRenderer && needEnableView,
 	};
@@ -272,17 +289,19 @@ export function createToolbarItems<TData>(
 	return input;
 }
 
-const defaultPaginationConfig: PaginationConfig = {
-	pageIndex: 0,
-	pageSizes: [10, 20, 30, 40, 50],
-	pageSize: 10,
-	enable: true,
+export function getDefaultPaginationConfig(): PaginationConfig {
+	return {
+		pageIndex: 0,
+		pageSizes: [10, 20, 30, 40, 50],
+		pageSize: 10,
+		enable: true,
+	};
 };
 
 export function createPaginationConfig(
 	input: Partial<PaginationConfig> = {},
 ): PaginationConfig {
-	return Object.assign({}, defaultPaginationConfig, input);
+	return Object.assign({}, getDefaultPaginationConfig(), input);
 }
 
 export type DataTableRendererProps<TData> = {
