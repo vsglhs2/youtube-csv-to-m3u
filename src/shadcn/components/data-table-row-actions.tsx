@@ -1,19 +1,21 @@
 'use client';
 
 import type { Row } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
-import { Children, type PropsWithChildren, type ReactNode } from 'react';
+import { MoreHorizontal, type LucideIcon } from 'lucide-react';
+import { Children, createElement, type PropsWithChildren } from 'react';
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 
-type CanShowRowActionCallback<TData> = (data: Row<TData>) => boolean;
+type CanRowActionCallback<TData> = (data: Row<TData>) => boolean;
 type RowActionCallback<TData> = (data: Row<TData>) => void;
 type RowActionsCallback<TData> = (data: Row<TData>[]) => void;
 
 export type RowAction<TData> = {
 	label: string;
-	canShow?: CanShowRowActionCallback<TData>;
+	icon?: LucideIcon;
+	canClick?: CanRowActionCallback<TData>;
+	canGroup?: CanRowActionCallback<TData>;
 } & ({
 	onClick: RowActionCallback<TData>;
 	onGroup?: RowActionsCallback<TData>;
@@ -25,11 +27,13 @@ export type RowAction<TData> = {
 export type RowActions<TData = unknown> = RowAction<TData>[];
 
 type BaseDataTableRowActionsProps = PropsWithChildren<{
-	label?: string | ReactNode;
+	label?: string;
+	icon?: LucideIcon;
 }>;
 
 export function BaseDataTableRowActions({
 	label,
+	icon,
 	children,
 }: BaseDataTableRowActionsProps) {
 
@@ -45,6 +49,7 @@ export function BaseDataTableRowActions({
 			size="sm"
 			className="ml-auto hidden h-8 lg:flex"
 		>
+			{icon && createElement(icon)}
 			{label}
 		</Button>
 	) : (
@@ -71,30 +76,33 @@ interface DataTableRowActionsProps<TData> {
 	data: Row<TData>;
 	actions: RowActions<TData>;
 	label?: string;
+	icon?: LucideIcon;
 }
 
 export function DataTableRowActions<TData>({
 	data,
 	actions,
 	label,
+	icon,
 }: DataTableRowActionsProps<TData>) {
 	const getActionHandler = (handler: RowActionCallback<TData>) => () => {
 		handler(data);
 	};
 
 	const renderedActions = actions
-		.filter(a => (a.canShow ? a.canShow(data) : true) && a.onClick)
 		.map((action, i) => (
 			<DropdownMenuItem
+				disabled={Boolean(!action.canClick?.(data) || !action.onClick)}
 				key={action.label + i}
 				onClick={getActionHandler(action.onClick!)}
 			>
+				{action.icon && createElement(action.icon)}
 				{action.label}
 			</DropdownMenuItem>
 		));
 
 	return (
-		<BaseDataTableRowActions label={label}>
+		<BaseDataTableRowActions label={label} icon={icon}>
 			{renderedActions}
 		</BaseDataTableRowActions>
 	);
@@ -104,30 +112,33 @@ interface DataTableGroupRowActionsProps<TData> {
 	data: Row<TData>[];
 	actions: RowActions<TData>;
 	label?: string;
+	icon?: LucideIcon;
 }
 
 export function DataTableGroupRowActions<TData>({
 	data,
 	actions,
 	label,
+	icon,
 }: DataTableGroupRowActionsProps<TData>) {
 	const getActionHandler = (handler: RowActionsCallback<TData>) => () => {
 		handler(data);
 	};
 
 	const renderedActions = actions
-		.filter(a => a.onGroup)
+		.filter((a) => a.onGroup)
 		.map((action, i) => (
 			<DropdownMenuItem
 				key={action.label + i}
 				onClick={getActionHandler(action.onGroup!)}
 			>
+				{action.icon && createElement(action.icon)}
 				{action.label}
 			</DropdownMenuItem>
 		));
 
 	return (
-		<BaseDataTableRowActions label={label}>
+		<BaseDataTableRowActions label={label} icon={icon}>
 			{renderedActions}
 		</BaseDataTableRowActions>
 	);
