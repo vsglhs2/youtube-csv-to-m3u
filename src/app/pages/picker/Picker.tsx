@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState, type FC, type ReactNode } from 'react';
-import { ArrowDown, FileIcon, MoreHorizontal } from 'lucide-react';
+import { useEffect, useReducer, useRef, useState, type FC, type ReactNode } from 'react';
+import { ListRestart, MoreHorizontal } from 'lucide-react';
 import type { ZodError } from 'zod/v4';
-import { transform, z } from 'zod/v4';
-import { transfer, wrap, type Remote } from 'comlink';
+import { z } from 'zod/v4';
+import { wrap, type Remote } from 'comlink';
 
 import { DataTable } from '@/shadcn/components/data-table';
 import { CsvImporter } from '@/shadcn/components/csv-importer';
-import { createColumnsOptions, createGridRenderer, createPaginationConfig, createTableConfig, createToolbarItems } from '@/shadcn/lib/table-config';
+import { createColumnsOptions, createGridRenderer, createPaginationConfig, createTableConfig, createToolbarItems, getDefaultPaginationConfig } from '@/shadcn/lib/table-config';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn/components/ui/popover';
 import { Button } from '@/shadcn/components/ui/button';
 import type { ProxyScheme } from '@/proxy';
@@ -14,7 +14,7 @@ import type { YTSearch } from '@/yt-search';
 import type { Session as RemoteSession } from '@/worker';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/shadcn/components/ui/hover-card';
 import { Badge } from '@/shadcn/components/ui/badge';
-import type { ComboboxStatus} from '@/shadcn/components/combobox';
+import type { ComboboxStatus } from '@/shadcn/components/combobox';
 import { ComboboxPopover, type ComboboxPopoverStatusCallback } from '@/shadcn/components/combobox';
 
 const authorSchema = z.object({
@@ -154,7 +154,7 @@ type PretansformedFavorites = z.infer<typeof pretransformedFavoritesSchema>;
 
 function createTableFromData<TData>(data: TData[]) {
 	const keys = data[0] ? Object.keys(data[0]) : [];
-	const columns = createColumnsOptions<TData>(c => keys.map(key => c.cell({
+	const columns = createColumnsOptions<TData>((c) => keys.map((key) => c.cell({
 		accessor: key as keyof TData,
 		header: key,
 		hiding: false,
@@ -172,9 +172,9 @@ function createTransformTableConfigFromData<
 	TData extends Record<string, unknown>,
 >(data: TData[], session: Session) {
 	const { transforms, canStart, start } = useDataTransforms(data, session);
-	console.dir(transforms);
+	console.log('Transforms', transforms);
 
-	const columns = createColumnsOptions<Transform<TData, Song>>(c => [
+	const columns = createColumnsOptions<Transform<TData, Song>>((c) => [
 		c.select(),
 		c.cell({
 			id: 'status',
@@ -182,11 +182,11 @@ function createTransformTableConfigFromData<
 			cell({ row }) {
 				const renderedBadge = (
 					<Badge>
-						{row.original.status.type}
+						{row.original.state.type}
 					</Badge>
 				);
 
-				const { status } = row.original;
+				const { state: status } = row.original;
 				let renderedContent: ReactNode = null;
 
 				if (status.type === 'success') {
@@ -209,21 +209,22 @@ function createTransformTableConfigFromData<
 				);
 
 				return (
-					<HoverCard>
-						<HoverCardTrigger>
+					<Popover>
+						<PopoverTrigger>
 							<Button
 								variant="ghost"
-								className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+								className="flex p-0 data-[state=open]:bg-muted"
 							>
 								{renderedBadge}
 							</Button>
-						</HoverCardTrigger>
-						<HoverCardContent className='w-fit p-0 m-0'>
+						</PopoverTrigger>
+						<PopoverContent className='w-fit p-0 m-0'>
 							{renderedContent}
-						</HoverCardContent>
-					</HoverCard>
+						</PopoverContent>
+					</Popover>
 				);
 			},
+			previewing: false,
 		}),
 		c.cell({
 			id: 'view',
@@ -235,8 +236,8 @@ function createTransformTableConfigFromData<
 				config.mode = 'columns';
 
 				return (
-					<HoverCard>
-						<HoverCardTrigger>
+					<Popover>
+						<PopoverTrigger>
 							<Button
 								variant="ghost"
 								className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
@@ -244,28 +245,38 @@ function createTransformTableConfigFromData<
 								<MoreHorizontal />
 								<span className="sr-only">View</span>
 							</Button>
-						</HoverCardTrigger>
-						<HoverCardContent className='w-fit p-0 m-0'>
+						</PopoverTrigger>
+						<PopoverContent className='w-fit p-0 m-0'>
 							<DataTable data={rowData} config={config} />
-						</HoverCardContent>
-					</HoverCard>
+						</PopoverContent>
+					</Popover>
 				);
 			},
+			previewing: false,
 		}),
 		c.actions({
-			label: 'restart',
+			label: 'Restart',
+			icon: ListRestart,
 			onClick(data) {
 				const { original: transform } = data;
 				start(transform.id);
 			},
-			canShow(data) {
+			canClick(data) {
 				return canStart(data.original.id);
 			},
 		}),
 	]);
 
-	const config = createTableConfig(columns, {
+	const { pageSizes } = getDefaultPaginationConfig();
+	if (data.length > (pageSizes.at(-1) ?? 0)) {
+		pageSizes.push(data.length);
+	}
 
+	const pagination = createPaginationConfig({
+		pageSizes: pageSizes,
+	});
+	const config = createTableConfig(columns, {
+		pagination: pagination,
 	});
 
 	return {
@@ -284,7 +295,7 @@ class Session {
 	}
 
 	public async setupYTSearch() {
-		await new Promise(resolve => setTimeout(resolve, 2000));
+		await new Promise((resolve) => setTimeout(resolve, 2000));
 		const port = await this.remote.getYTSearchPort();
 
 		// wrap<YTSearch> breaks correct parameters and return type infer
@@ -341,7 +352,7 @@ function useYTSearch(session: Session) {
 		console.log('setup yt-search inside hook');
 		session
 			.setupYTSearch()
-			.then(yts => {
+			.then((yts) => {
 				window.yts = yts;
 				console.log('got yt-search inside hook', controller.signal.aborted);
 				if (controller.signal.aborted) return;
@@ -349,7 +360,7 @@ function useYTSearch(session: Session) {
 				resolvers.resolve(yts);
 
 			})
-			.catch(reason => {
+			.catch((reason) => {
 				console.log('error inside hook');
 
 				console.error(reason);
@@ -425,6 +436,10 @@ export type TransformState<PreTransform, Transform> =
 		payload: {};
 	}
 	| {
+		type: 'stopped';
+		payload: {};
+	}
+	| {
 		type: 'released';
 		payload: {};
 	}
@@ -454,9 +469,12 @@ export type TransformState<PreTransform, Transform> =
 	};
 
 export type Transform<PreTransform, Transform> = {
-	id: number;
-	status: TransformState<PreTransform, Transform>;
-	source: PreTransform;
+	readonly id: number;
+	readonly state: TransformState<PreTransform, Transform>;
+	readonly source: PreTransform;
+	start(): void;
+	stop(): void;
+	cleanup(): void;
 };
 
 // export function createTransform<PreTransform, Transform>(
@@ -471,52 +489,38 @@ function createFavoritesTransform<
 	id: number,
 	data: TData,
 	session: TransformSession,
-	onTransform: (transform: Transform<TData, Song>) => void,
-) {
+	onTransformState: (state: TransformState<TData, Song>) => void,
+): Transform<TData, Song> {
 	const controller = new AbortController();
+	let state: TransformState<TData, Song> = {
+		type: 'idle',
+		payload: {},
+	};
 
-	function setTransformState(transform: Transform<TData, Song>) {
-		if (controller.signal.aborted) {
-			return;
-		}
-
-		onTransform(transform);
+	function setTransformState(newState: TransformState<TData, Song>) {
+		state = newState;
+		onTransformState(state);
 	}
 
-	setTransformState({
-		id,
-		status: {
-			type: 'idle',
-			payload: {},
-		},
-		source: data,
-	});
+	setTransformState(state);
 
-	const transform = async () => {
+	async function* transform(): AsyncGenerator<TransformState<TData, Song>> {
 		try {
-			setTransformState({
-				id,
-				status: {
-					type: 'queueing',
-					payload: {
-						place: 1,
-					},
+			yield {
+				type: 'queueing',
+				payload: {
+					place: 1,
 				},
-				source: data,
-			});
+			};
 
 			const search = await session.queue();
 
-			setTransformState({
-				id,
-				status: {
-					type: 'pending',
-					payload: {
-						status: 'Querying yt-search session',
-					},
+			yield {
+				type: 'pending',
+				payload: {
+					status: 'Querying yt-search session',
 				},
-				source: data,
-			});
+			};
 
 			if ('id' in data) {
 				const query = await search({ videoId: data.id as string });
@@ -543,16 +547,12 @@ function createFavoritesTransform<
 					...data,
 				});
 
-				onTransform({
-					id,
-					status: {
-						type: 'success',
-						payload: {
-							data: transformed,
-						},
+				yield {
+					type: 'success',
+					payload: {
+						data: transformed,
 					},
-					source: data,
-				});
+				};
 			}
 
 			if ('title' in data && 'authorName' in data) {
@@ -574,7 +574,7 @@ function createFavoritesTransform<
 					description: query.description,
 
 					duration: candidate.duration.seconds,
-					uploadDate:  new Date(query.uploadDate).toISOString(),
+					uploadDate: new Date(query.uploadDate).toISOString(),
 
 					imageUrl: query.thumbnail,
 					url: query.url,
@@ -590,52 +590,64 @@ function createFavoritesTransform<
 					...data,
 				});
 
-				onTransform({
-					id,
-					status: {
-						type: 'success',
-						payload: {
-							data: transformed,
-						},
+				yield {
+					type: 'success',
+					payload: {
+						data: transformed,
 					},
-					source: data,
-				});
+				};
 			}
 		} catch (error) {
 			if (error instanceof ReleaseQueueSessionError) {
-				onTransform({
-					id,
-					status: {
-						type: 'released',
-						payload: {
-						},
+				yield {
+					type: 'released',
+					payload: {
 					},
-					source: data,
-				});
+				};
 
 				return;
 			}
 
-			setTransformState({
-				id,
-				status: {
-					type: 'failed',
-					payload: {
-						error: error,
-					},
+			yield {
+				type: 'failed',
+				payload: {
+					error: error,
 				},
-				source: data,
-			});
+			};
 		}
+	}
 
-	};
+	async function processTransform() {
+		for await (const newState of transform()) {
+			console.log('New state', newState);
+			if (state.type === 'stopped') break;
+
+			setTransformState(newState);
+		}
+	}
+
+	function cleanup() {
+		controller.abort();
+	}
 
 	return {
-		cleanup: () => {
-			controller.abort();
+		id,
+		source: data,
+		get state() {
+			return state;
 		},
+		cleanup: cleanup,
 		start: () => {
-			transform();
+			processTransform();
+		},
+		stop: () => {
+			cleanup();
+
+			setTransformState({
+				type: 'stopped',
+				payload: {
+				},
+			});
 		},
 	};
 }
@@ -644,58 +656,58 @@ function useDataTransforms<
 	TData extends Record<string, unknown>,
 >(data: TData[], session: Session) {
 	const ytsPromise = useYTSearch(session);
+	const transformsRef = useRef<Transform<TData, Song>[]>([]);
 
-	const [transforms, setTransforms] = useState<Transform<TData, Song>[]>([]);
-	const [starts, setStarts] = useState<(() => void)[]>([]);
+	// TODO: get rid of forced rerender
+	const [, rerender] = useReducer((x) => x + 1, 0);
 
 	useEffect(() => {
-		const cleanups: (() => void)[] = [];
+		const transforms: Transform<TData, Song>[] = [];
+
 		for (const [id, row] of data.entries()) {
 			const session = createTransformSession(ytsPromise);
-			const { cleanup, start } = createFavoritesTransform(
+			const transform = createFavoritesTransform(
 				id,
 				row,
 				session,
-				transform => {
-					console.log(transform);
+				() => {
+					rerender();
+					console.log('Rerender', data, transforms, transformsRef);
+				},
+			);
 
-					setTransforms(transforms => [
-						...transforms.slice(0, id),
-						transform,
-						...transforms.slice(id + 1),
-					]);
-				});
+			transform.start();
 
-			cleanups.push(cleanup);
-			cleanups.push(() => session.release);
-
-			start();
-			setStarts(starts => [
-				...starts.slice(0, id),
-				start,
-				...starts.slice(id + 1),
-			]);
+			transforms.push(transform);
 		}
 
+		transformsRef.current = transforms;
+
 		return () => {
-			for (const cleanup of cleanups) {
-				cleanup();
+			for (const transform of transforms) {
+				transform.cleanup();
 			}
 		};
 	}, [data]);
 
 	function canStart(id: number) {
-		return transforms[id].status.type === 'failed';
+		return (
+			transformsRef.current[id].state.type !== 'pending' &&
+			transformsRef.current[id].state.type !== 'queueing'
+		);
 	}
 
 	return {
-		transforms: transforms,
+		transforms: transformsRef.current,
 		start(id: number) {
 			if (!canStart(id)) {
 				return;
 			}
 
-			return starts[id]?.();
+			return transformsRef.current[id].start();
+		},
+		stop(id: number) {
+			return transformsRef.current[id].stop();
 		},
 		canStart,
 	};
@@ -716,7 +728,7 @@ export function ProxySettings({ session }: ProxySettingsProps) {
 	const config = createTableFromData(proxySchemes);
 
 	const onStatus: ComboboxPopoverStatusCallback = (status) => {
-		const scheme = proxySchemes.find(s => s.name === status?.value) ?? null;
+		const scheme = proxySchemes.find((s) => s.name === status?.value) ?? null;
 		setActiveScheme(scheme);
 	};
 
@@ -745,7 +757,7 @@ export const PickerPage: FC = () => {
 	const session = useSession();
 
 	const [data, setData] = useState<PretansformedFavorites>([]);
-	const fields = partialSongSchema.keyof().options.map(key => ({
+	const fields = partialSongSchema.keyof().options.map((key) => ({
 		label: key,
 		value: key,
 	}));
